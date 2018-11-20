@@ -16,7 +16,7 @@ L = {
         'password_title': 'Generate a password!',
         'password_description': 'Returns a random sequence of {:d} characters.',
         'password_message': 'A generated password of {:d} characters is <b>{}</b>.',
-        'password_length_invalid': 'A password cannot be shorter than 6 characters or longer than 2048!',
+        'password_length_invalid': 'A password cannot be shorter than {:d} characters or longer than {:d}!',
 
         'rand_num_title': 'Get a random number!',
         'rand_num_description': 'Returns a random number from {:d} to {:d}.',
@@ -39,7 +39,7 @@ I'm able to respond to the following commands:
 `/yesno` (or `/yes_or_no`) - returns either *yes* or *no*.
 `/number [from] <up to>` - returns a *random number* between _from_ (1 if omitted) and _up to_.
 `/list item 1, item 2...` - returns a *random item* from your _list_ (a semicolon can be used as a separator too).
-`/seq [length]` (aliases `/password` and `/sequence`)  - returns a password of _length_ (8 if omitted) characters.
+`/seq [length]` (aliases `/password` and `/sequence`)  - returns a password of _length_ ({:d} if omitted) characters.
 
 Note that you may use me in any chat via the inline mode!
 """
@@ -61,7 +61,7 @@ Note that you may use me in any chat via the inline mode!
         'password_title': 'Сгенерировать пароль!',
         'password_description': 'Возвращает случайную последовательность из {:d} символов.',
         'password_message': 'Сгенерированный пароль из {:d} символов: <b>{}</b>.',
-        'password_length_invalid': 'Пароль не может состоять меньше чем из 6 символов или больше чем из 2048!',
+        'password_length_invalid': 'Пароль не может состоять меньше чем из {:d} символов или больше чем из {:d}!',
 
         'rand_num_title': 'Получить случайное число!',
         'rand_num_description': 'Возвращает случайное число от {:d} до {:d}.',
@@ -85,7 +85,7 @@ Note that you may use me in any chat via the inline mode!
 `/number [от] <до>` - возвращает *случайное число* между _от_ (1, если опущено) и _до_.
 `/list вариант 1, вариант 2...` - возвращает *случайный элемент* из _списка_ (в качестве разделителя может выступать и \
 точка с запятой (*;*)).
-`/seq [длина]` (псевдонимы: `/password` и `/sequence`)  - возвращает пароль из _длина_ (8, если опущена) символов.
+`/seq [длина]` (псевдонимы: `/password` и `/sequence`)  - возвращает пароль из _длина_ ({:d}, если опущена) символов.
 
 Обрати внимание, что ты можешь использовать меня в любом чате через inline-режим!
 """

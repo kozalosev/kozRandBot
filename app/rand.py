@@ -31,10 +31,14 @@ def maximum(num: int) -> Union[int, float]:
         return random.randint(1, num)
 
 
-def password(length: int) -> str:
+def password(length: int, extra_chars: str = "") -> str:
     """
     Generate a secure password of specified length.
 
     See: https://stackoverflow.com/a/23728630
+
+    :param length: the length of the generated password
+    :param extra_chars: additional non-alphanumeric characters that will be used in the password
     """
-    return ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(abs(length)))
+    chars = string.ascii_letters + string.digits + extra_chars
+    return ''.join(random.SystemRandom().choice(chars) for _ in range(abs(length)))

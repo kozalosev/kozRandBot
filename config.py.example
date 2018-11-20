@@ -1,6 +1,10 @@
 TOKEN = "123456789:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
+MIN_PASSWORD_LENGTH = 6
+MAX_PASSWORD_LENGTH = 2048
 DEFAULT_PASSWORD_LENGTH = 8
+# Here you may specify additional non-alphanumeric characters that will be used in generated passwords.
+PASSWORD_EXTRA_CHARS = ""
 
 # Must be consistent with the path part of the location in your front-end web server configuration.
 NAME = "kozRandBot"

@@ -59,7 +59,7 @@ def reply_if_group(**kwargs) -> callable:
 @dispatcher.message_handler(commands=['start', 'help'])
 @reply_if_group(parse_mode="Markdown")
 def get_help(_: Message, lang: LanguageDictionary) -> str:
-    return lang['help']
+    return lang['help'].format(DEFAULT_PASSWORD_LENGTH)
 
 
 @dispatcher.message_handler(commands=['coin', 'flip_coin'])
@@ -119,10 +119,10 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
 def get_password(message: Message, lang: LanguageDictionary) -> str:
     text = message.get_args()
     length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
-    if length and 6 <= length <= 2048:
-        return rand.password(length)
+    if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
+        return rand.password(length, PASSWORD_EXTRA_CHARS)
     else:
-        return lang['password_length_invalid']
+        return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
 
 
 # INLINE HANDLER

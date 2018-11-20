@@ -75,17 +75,18 @@ class RandItemHandler(HTML, InlineHandler):
         return lang['rand_item_message'].format(query, random.choice(items_list))
 
 
-class PasswordHandler(Markdown, InlineHandler):
+class PasswordHandler(HTML, InlineHandler):
     _length: int = None
 
     @classmethod
     def can_process(cls, query: str) -> bool:
         length = try_parse_int(query)
-        return query == "" or length and 6 <= length <= 2048
+        return query == "" or length and config.MIN_PASSWORD_LENGTH <= length <= config.MAX_PASSWORD_LENGTH
 
     def get_text(self, query: str, lang: LanguageDictionary) -> str:
         length = self._get_length(query)
-        return lang['password_message'].format(length, rand.password(length))
+        password = rand.password(length, config.PASSWORD_EXTRA_CHARS)
+        return lang['password_message'].format(length, escape_html(password))
 
     def get_description(self, query: str, lang: LanguageDictionary) -> str:
         template = super().get_description(query, lang)
@@ -94,6 +95,6 @@ class PasswordHandler(Markdown, InlineHandler):
     def _get_length(self, query: str) -> int:
         if self._length is None:
             self._length = try_parse_int(query)
-            if not (self._length and 6 <= self._length <= 2048):
+            if not (self._length and config.MIN_PASSWORD_LENGTH <= self._length <= config.MAX_PASSWORD_LENGTH):
                 self._length = config.DEFAULT_PASSWORD_LENGTH
         return self._length
