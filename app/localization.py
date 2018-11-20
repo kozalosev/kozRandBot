@@ -14,22 +14,23 @@ L = {
         'flip_coin_description': 'Returns either heads or tails.',
 
         'password_title': 'Generate a password!',
-        'password_description': 'Returns a random sequence of %i characters.',
-        'password_message': 'A generated password of %i characters is <b>%s</b>.',
+        'password_description': 'Returns a random sequence of {:d} characters.',
+        'password_message': 'A generated password of {:d} characters is <b>{}</b>.',
         'password_length_invalid': 'A password cannot be shorter than 6 characters or longer than 2048!',
 
         'rand_num_title': 'Get a random number!',
-        'rand_num_description': 'Returns a random number from %i to %i.',
-        'rand_num_message': 'A random number between %i and %i is *%i*.',
-        'rand_num_from_zero_message': 'A random number up to %i is *%i*.',
+        'rand_num_description': 'Returns a random number from {:d} to {:d}.',
+        'rand_num_message': 'A random number between {:d} and {:d} is *{:d}*.',
+        'rand_num_from_zero_description': 'Returns a random number up to {:d}.',
+        'rand_num_from_zero_message': 'A random number up to {:d} is *{:d}*.',
 
         'yes_no_title': 'Yes or no?',
         'yes_no_description': 'Gives you the answer on your question.',
-        'yes_no_message': 'You asked me: <i>%s</i>\nI think <b>%s</b>.',
+        'yes_no_message': 'You asked me: <i>{}</i>\nI think <b>{}</b>.',
 
         'rand_item_title': 'Get a random item!',
         'rand_item_description': 'Returns a random item from your list.',
-        'rand_item_message': 'From: <i>%s</i>\nI choose: <b>%s</b>.',
+        'rand_item_message': 'From: <i>{}</i>\nI choose: <b>{}</b>.',
 
         'help': """Hello, dear friend! Can I help you? Maybe, do you need to decide something? Or get a random number?
 
@@ -58,22 +59,23 @@ Note that you may use me in any chat via the inline mode!
         'flip_coin_description': 'Возвращает выпавшую сторону монеты.',
 
         'password_title': 'Сгенерировать пароль!',
-        'password_description': 'Возвращает случайную последовательность из %i символов.',
-        'password_message': 'Сгенерированный пароль из %i символов: <b>%s</b>.',
+        'password_description': 'Возвращает случайную последовательность из {:d} символов.',
+        'password_message': 'Сгенерированный пароль из {:d} символов: <b>{}</b>.',
         'password_length_invalid': 'Пароль не может состоять меньше чем из 6 символов или больше чем из 2048!',
 
         'rand_num_title': 'Получить случайное число!',
-        'rand_num_description': 'Возвращает случайное число от %i до %i.',
-        'rand_num_message': 'Случайное число между %i и %i: *%i*.',
-        'rand_num_from_zero_message': 'Случайное число до %i: *%i*.',
+        'rand_num_description': 'Возвращает случайное число от {:d} до {:d}.',
+        'rand_num_message': 'Случайное число между {:d} и {:d}: *{:d}*.',
+        'rand_num_from_zero_description': 'Возвращает случайное число до {:d}.',
+        'rand_num_from_zero_message': 'Случайное число до {:d}: *{:d}*.',
 
         'yes_no_title': 'Да или нет?',
         'yes_no_description': 'Даёт ответ на вопрос.',
-        'yes_no_message': 'Ты спросил меня: <i>%s</i>\nЯ думаю, что <b>%s</b>.',
+        'yes_no_message': 'Ты спросил меня: <i>{}</i>\nЯ думаю, что <b>{}</b>.',
 
         'rand_item_title': 'Получить случайный элемент списка!',
         'rand_item_description': 'Возвращает случайный элемент из указанного списка.',
-        'rand_item_message': 'Из: <i>%s</i>\nЯ выбираю: <b>%s</b>.',
+        'rand_item_message': 'Из: <i>{}</i>\nЯ выбираю: <b>{}</b>.',
 
         'help': """Привет, друг! Помочь тебе с принятием решения? Или, может быть, хочешь получить случайное число? 
 
