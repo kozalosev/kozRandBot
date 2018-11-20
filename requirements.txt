@@ -1,0 +1,2 @@
+aiogram==2.0
+klocmod==0.2.0

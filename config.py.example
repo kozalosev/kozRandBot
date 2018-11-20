@@ -1,0 +1,13 @@
+TOKEN = "123456789:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+DEFAULT_PASSWORD_LENGTH = 8
+
+# Must be consistent with the path part of the location in your front-end web server configuration.
+NAME = "kozRandBot"
+HOST = "bots.example.org"
+SERVER_PORT = 8443                   # A port on a front-end web server.
+UNIX_SOCKET = f"/tmp/{NAME}.sock"    # A Unix domain socket to communicate with that web server.
+
+# Set to 'False' for production use.
+# Besides the level of verbosity, determines whether polling or webhooks will be used.
+DEBUG = True
