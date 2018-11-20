@@ -55,7 +55,7 @@ class Items:
 
     @staticmethod
     def __search_conjunction(conjunction, string) -> Optional[List[str]]:
-        expr = re.compile(",?\s+%s\s+" % conjunction, flags=re.IGNORECASE)
+        expr = re.compile(r",?\s+%s\s+" % conjunction, flags=re.IGNORECASE)
         if re.search(expr, string):
             return re.split(expr, string)
         else:
@@ -73,7 +73,7 @@ def try_extract_numbers(text: str) -> Optional[List[int]]:
     """Try to extract numbers from a space-separated string of numbers."""
     if not text:
         return None
-    numbers_str = re.split(",?\s", text)
+    numbers_str = re.split(r",?\s", text)
     numbers = list(map(lambda n: try_parse_int(n), numbers_str))
     if None in numbers:
         return None

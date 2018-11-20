@@ -10,5 +10,6 @@ services:
   - docker
 env: PYTHONPATH=app
 script:
+  - cp config.py.example app/data/config.py
   - pytest
   - docker-compose build

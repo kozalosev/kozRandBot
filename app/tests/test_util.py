@@ -10,7 +10,7 @@ def test_parse_int_with_numbers(x):
     assert util.try_parse_int(str(x)) == x
 
 
-@given(text(alphabet=characters(blacklist_categories='Cc,N')))
+@given(text(alphabet=characters(blacklist_categories='CN')))
 def test_parse_int_with_strings(x):
     assert util.try_parse_int(x) is None
 

@@ -46,6 +46,6 @@ def test_maximum_with_zero():
     assert 0 <= rand.maximum(0) < 1
 
 
-@given(integers(min_value=-2048, max_value=2048))
+@pytest.mark.parametrize("length", [-100, 20, 50, 0])
 def test_password(length):
     assert len(rand.password(length)) == abs(length)
