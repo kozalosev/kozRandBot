@@ -1,0 +1,12 @@
+version: "3"
+services:
+  textUtilsBot:
+    build: .
+    image: kozalo/kozrandbot
+    container_name: kozrandbot
+    hostname: kozrandbot
+    working_dir: /home/kozrandbot
+    restart: always
+    volumes:
+    - "./app/data:/home/kozRandBot/app/data"
+    - "/tmp:/tmp"
