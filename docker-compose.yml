@@ -4,8 +4,8 @@ services:
     build: .
     image: kozalo/kozrandbot
     container_name: kozrandbot
-    hostname: kozrandbot
-    working_dir: /home/kozrandbot
+    hostname: kozRandBot
+    working_dir: /home/kozRandBot
     restart: always
     volumes:
     - "./app/data:/home/kozRandBot/app/data"
