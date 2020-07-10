@@ -91,7 +91,7 @@ Note that you may use me in any chat via the inline mode!
 """
     },
     
-    'pt-BR': {
+    'pt': {
         'heads': 'Cara',
         'tails': 'Coroa',
         'yes': 'sim',
@@ -132,7 +132,7 @@ Sou capaz de responder aos seguintes comandos:
 `/list item 1, item 2...` - retorna um *item aleatório* da sua _lista_ (é possível usar ponto-e-vírgula para separar itens).
 `/seq [comprimento]` (alternativas `/password` ou `/sequence`)  - retorna uma senha com o número de caracteres definido em _comprimento_ ({:d}, se não tiver sido definido).
 
-Lembre-se que você pode usar estes comandos em qualquer conversa através do modo inline!
+Lembre-se que pode usar estes comandos em qualquer conversa através do modo inline!
 """
     },
 
