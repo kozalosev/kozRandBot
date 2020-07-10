@@ -89,7 +89,8 @@ Note that you may use me in any chat via the inline mode!
 
 Обрати внимание, что ты можешь использовать меня в любом чате через inline-режим!
 """
-    }
+    },
+    
     'pt-BR': {
         'heads': 'Cara',
         'tails': 'Coroa',
