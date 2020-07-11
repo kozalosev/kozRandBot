@@ -49,3 +49,13 @@ def test_maximum_with_zero():
 @pytest.mark.parametrize("length", [-100, 20, 50, 0])
 def test_password(length):
     assert len(rand.password(length)) == abs(length)
+
+
+def test_is_password_strong():
+    extra_chars = "#$%+!"
+    assert rand._is_password_strong("abC2D1%", extra_chars)
+    assert not rand._is_password_strong("abC2D1", extra_chars)
+    assert rand._is_password_strong("abC2D1", "")
+    assert not rand._is_password_strong("abCD%", extra_chars)
+    assert not rand._is_password_strong("ABC2D1%", extra_chars)
+    assert not rand._is_password_strong("abc2d1%", extra_chars)

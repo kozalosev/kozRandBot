@@ -1,8 +1,13 @@
 """Implementations of some functions returning random values."""
 
+import re
 import random
 import string
+import logging
 from typing import *
+
+
+__logger = logging.getLogger("rand")
 
 
 def one_out_of_two(first, second) -> Any:
@@ -42,3 +47,36 @@ def password(length: int, extra_chars: str = "") -> str:
     """
     chars = string.ascii_letters + string.digits + extra_chars
     return ''.join(random.SystemRandom().choice(chars) for _ in range(abs(length)))
+
+
+def strong_password(length: int, extra_chars: str = "", max_tries: int = 100) -> str:
+    """
+    Generate a secure password of specified length as the 'password' function do, but also
+    ensures that password is strong enough.
+
+    See: https://github.com/kozalosev/kozRandBot/issues/2
+
+    :param length: the length of the generated password
+    :param extra_chars: additional non-alphanumeric characters that will be used in the password
+    :param max_tries: used as a threshold value to prevent the infinite loop to occur
+    """
+    generated_password = ""
+    fuse = 0
+    while not _is_password_strong(generated_password, extra_chars):
+        if fuse >= max_tries:
+            __logger.warning("Tried to generate proper password over {:d} times!".format(max_tries))
+            break
+        fuse += 1
+        generated_password = password(length, extra_chars)
+    __logger.info("A password was generated for {:d} times".format(fuse))
+    return generated_password
+
+
+def _is_password_strong(pwd: str, extra_chars: str) -> bool:
+    if not re.search(r"\d", pwd):
+        return False
+    if not re.search(r"[a-z]", pwd) or not re.search(r"[A-Z]", pwd):
+        return False
+    if len(extra_chars) > 0 and not any(x in pwd for x in extra_chars):
+        return False
+    return True
