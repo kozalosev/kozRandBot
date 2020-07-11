@@ -89,6 +89,51 @@ Note that you may use me in any chat via the inline mode!
 
 Обрати внимание, что ты можешь использовать меня в любом чате через inline-режим!
 """
-    }
+    },
+    
+    'pt': {
+        'heads': 'Cara',
+        'tails': 'Coroa',
+        'yes': 'sim',
+        'no': 'não',
+        'usage': 'Uso',
+        'from': 'de',
+        'to': 'a',
+        'item': 'item',
+
+        'flip_coin_title': 'Jogue uma moeda!',
+        'flip_coin_description': 'Retorna cara ou coroa.',
+
+        'password_title': 'Gerar uma senha!',
+        'password_description': 'Retorna uma sequência aleatória de caracteres {:d}.',
+        'password_message': 'Uma senha gerada com {:d} caracteres é <b>{}</b>.',
+        'password_length_invalid': 'Uma senha não pode ter menos de {:d} caracteres ou mais de {:d}!',
+
+        'rand_num_title': 'Obter um número aleatório!',
+        'rand_num_description': 'Retorna um número aleatório entre {:d} e {:d}.',
+        'rand_num_message': 'Um número aleatório entre {:d} e {:d} é *{:d}*.',
+        'rand_num_from_zero_description': 'Retorna um número aleatório até {:d}.',
+        'rand_num_from_zero_message': 'Um número aleatório até {:d} é *{:d}*.',
+
+        'yes_no_title': 'Sim ou não?',
+        'yes_no_description': 'Envia uma resposta para sua pergunta.',
+        'yes_no_message': 'Você me perguntou: <i>{}</i>\nEu acho que <b>{}</b>.',
+
+        'rand_item_title': 'Obter um item aleatório!',
+        'rand_item_description': 'Retorna um item aleatório da sua lista.',
+        'rand_item_message': 'De: <i>{}</i>\nEu escolho: <b>{}</b>.',
+
+        'help': """Olá, meu amigo, posso ajudar? Talvez você precise decidir alguma coisa? Ou obter um número aleatório?
+
+Sou capaz de responder aos seguintes comandos:
+`/coin` (ou `/flip_coin`) - retorna *cara* ou *coroa*.
+`/yesno` (ou `/yes_or_no`) - retorna *sim* ou *não*.
+`/number [de] <até>` - retorna um *número aleatório* entre o valor em _de_ (1, se não tiver sido definido) e o valor em _até_.
+`/list item 1, item 2...` - retorna um *item aleatório* da sua _lista_ (é possível usar ponto-e-vírgula para separar itens).
+`/seq [comprimento]` (alternativas `/password` ou `/sequence`)  - retorna uma senha com o número de caracteres definido em _comprimento_ ({:d}, se não tiver sido definido).
+
+Lembre-se que pode usar estes comandos em qualquer conversa através do modo inline!
+"""
+    },
 
 }
