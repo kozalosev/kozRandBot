@@ -120,7 +120,7 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
     text = message.get_args()
     length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
-        return rand.password(length, PASSWORD_EXTRA_CHARS)
+        return rand.strong_password(length, PASSWORD_EXTRA_CHARS, MAX_PASSWORD_GENERATION_TRIES)
     else:
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
 

@@ -85,7 +85,7 @@ class PasswordHandler(HTML, InlineHandler):
 
     def get_text(self, query: str, lang: LanguageDictionary) -> str:
         length = self._get_length(query)
-        password = rand.password(length, config.PASSWORD_EXTRA_CHARS)
+        password = rand.strong_password(length, config.PASSWORD_EXTRA_CHARS, config.MAX_PASSWORD_GENERATION_TRIES)
         return lang['password_message'].format(length, escape_html(password))
 
     def get_description(self, query: str, lang: LanguageDictionary) -> str:
