@@ -129,7 +129,7 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
 
 @dispatcher.inline_handler(lambda query: True)
 async def show_inline_suggestions(query: InlineQuery) -> None:
-    lang = localizations.get_lang(query.query)
+    lang = localizations.get_lang(query.from_user.language_code)
     builder = InlineQueryResultsBuilder()
 
     for handler in inline_handlers.match_handlers(query.query):
