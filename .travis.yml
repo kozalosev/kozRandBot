@@ -1,8 +1,10 @@
-sudo: required
+os: linux
+dist: bionic
 language: python
 cache: pip
 python:
-  - "3.7-dev"    # Currently, Travis CI doesn't support the stable version yet.
+  - "3.7"
+  - "3.8"
 install:
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
