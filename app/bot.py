@@ -125,6 +125,17 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
 
 
+@dispatcher.message_handler(commands=['seqc', 'cseq', 'passwd'])
+@reply_if_group()
+def get_password(message: Message, lang: LanguageDictionary) -> str:
+    text = message.get_args()
+    length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
+    if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
+        return rand.strong_password(length, max_tries=MAX_PASSWORD_GENERATION_TRIES)
+    else:
+        return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+
+
 # INLINE HANDLER
 
 @dispatcher.inline_handler(lambda query: True)
