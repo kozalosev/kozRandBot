@@ -1,7 +1,7 @@
 [@kozRandBot](https://t.me/kozRandBot)
 ======================================
 
-[![Build Status](https://travis-ci.org/kozalosev/kozRandBot.svg?branch=master)](https://travis-ci.org/kozalosev/kozRandBot)
+[![CI Build](https://github.com/kozalosev/kozRandBot/actions/workflows/ci-build.yml/badge.svg)](https://github.com/kozalosev/kozRandBot/actions/workflows/ci-build.yml)
 
 A Telegram bot that can help you with:
 
@@ -90,8 +90,12 @@ After that, run the following command on Linux:
 PYTHONPATH=app pytest
 ```
 
-Or this command on Windows:
-
-```cmd
-set PYTHONPATH=app && pytest
-```
+Or one of these commands on Windows:
+* CMD:
+    ```cmd
+    set PYTHONPATH=app && pytest
+    ```
+* PowerShell:
+    ```powershell
+    $env:PYTHONPATH='app'; pytest
+    ```

@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r requirements-dev.txt
 
+      - name: Copy config file
+        run: cp config.py.example app/data/config.py
+
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
       - name: Test code
