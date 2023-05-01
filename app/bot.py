@@ -130,24 +130,20 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
 @reply_if_group()
 def get_password(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seq").inc()
-
-    text = message.get_args()
-    length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
-    if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
-        return rand.strong_password(length, PASSWORD_EXTRA_CHARS, MAX_PASSWORD_GENERATION_TRIES)
-    else:
-        return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+    return _get_password(message.get_args(), lang, PASSWORD_EXTRA_CHARS)
 
 
 @dispatcher.message_handler(commands=['seqc', 'cseq', 'passwd'])
 @reply_if_group()
-def get_password(message: Message, lang: LanguageDictionary) -> str:
+def get_password_conservative(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seqc").inc()
+    return _get_password(message.get_args(), lang)
 
-    text = message.get_args()
-    length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
+
+def _get_password(args: str, lang: LanguageDictionary, extra_chars: str = "") -> str:
+    length = try_parse_int(args) if args else DEFAULT_PASSWORD_LENGTH
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
-        return rand.strong_password(length, max_tries=MAX_PASSWORD_GENERATION_TRIES)
+        return rand.strong_password(length, extra_chars, MAX_PASSWORD_GENERATION_TRIES)
     else:
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
 
