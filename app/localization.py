@@ -23,6 +23,7 @@ L = {
         'rand_num_message': 'A random number between {:d} and {:d} is *{:d}*.',
         'rand_num_from_zero_description': 'Returns a random number up to {:d}.',
         'rand_num_from_zero_message': 'A random number up to {:d} is *{:d}*.',
+        'rand_num_from_zero_to_one_message': 'A random number between 0 and 1 is *{:f}*.',
 
         'yes_no_title': 'Yes or no?',
         'yes_no_description': 'Gives you the answer on your question.',
@@ -68,6 +69,7 @@ Note that you may use me in any chat via the inline mode!
         'rand_num_message': 'Случайное число между {:d} и {:d}: *{:d}*.',
         'rand_num_from_zero_description': 'Возвращает случайное число до {:d}.',
         'rand_num_from_zero_message': 'Случайное число до {:d}: *{:d}*.',
+        'rand_num_from_zero_to_one_message': 'Случайное число между 0 и 1: *{:f}*.',
 
         'yes_no_title': 'Да или нет?',
         'yes_no_description': 'Даёт ответ на вопрос.',
@@ -114,6 +116,7 @@ Note that you may use me in any chat via the inline mode!
         'rand_num_message': 'Um número aleatório entre {:d} e {:d} é *{:d}*.',
         'rand_num_from_zero_description': 'Retorna um número aleatório até {:d}.',
         'rand_num_from_zero_message': 'Um número aleatório até {:d} é *{:d}*.',
+        'rand_num_from_zero_to_one_message': 'Um número aleatório entre 0 and 1 e *{:f}*.',
 
         'yes_no_title': 'Sim ou não?',
         'yes_no_description': 'Envia uma resposta para sua pergunta.',

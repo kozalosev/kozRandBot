@@ -154,7 +154,7 @@ async def show_inline_suggestions(query: InlineQuery) -> None:
     except TelegramAPIError as err:
         err_msg = str(err) + '\n'
         for i in builder.build_list():
-            err_msg += '(description="{}", text="{}")\n'.format(i.description, i.text)
+            err_msg += '(description="{}", text="{}")\n'.format(i.description, i.input_message_content.message_text)
         logger.exception(err_msg)
 
 

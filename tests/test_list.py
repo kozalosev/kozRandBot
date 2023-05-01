@@ -89,3 +89,11 @@ def test_or_separated_items_ru():
 def test_non_enumerations():
     assert not Items("just three words").acceptable
     assert not Items("просто три слова").acceptable
+
+
+def test_with_empty_item():
+    assert not Items("one,").acceptable
+
+    one_three = Items("one,,three")
+    assert one_three.acceptable
+    assert one_three.list == ['one', 'three']
