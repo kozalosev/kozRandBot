@@ -6,10 +6,11 @@ import functools
 from typing import *
 
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import Message, InlineQuery
+from aiogram.types import Message, InlineQuery, ChosenInlineResult
 from aiogram.utils.markdown import quote_html
 from aiogram.utils.exceptions import TelegramAPIError
 from klocmod import LocalizationsContainer, LanguageDictionary
+from prometheus_client import start_http_server, Counter
 
 import rand
 import localization
@@ -26,6 +27,10 @@ dispatcher = Dispatcher(bot)
 localizations = LocalizationsContainer(localization.L)
 inline_handlers = InlineHandlersLoader()
 logger = logging.getLogger(__name__)
+
+command_calls_counter = Counter("command_used", "Calls count of a command", ['handler'])
+inline_counter = Counter("inline_used", "Inline queries count")
+chosen_inline_res_counter = Counter("inline_result_chosen", "Count of times when inline result was chosen", ['handler'])
 
 
 # DECORATORS
@@ -59,24 +64,29 @@ def reply_if_group(**kwargs) -> callable:
 @dispatcher.message_handler(commands=['start', 'help'])
 @reply_if_group(parse_mode="Markdown")
 def get_help(_: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("help").inc()
     return lang['help'].format(DEFAULT_PASSWORD_LENGTH)
 
 
 @dispatcher.message_handler(commands=['coin', 'flip_coin'])
 @reply_if_group()
 def flip_coin(_: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("flip_coin").inc()
     return rand.one_out_of_two(lang['heads'], lang['tails'])
 
 
 @dispatcher.message_handler(commands=['yesno', 'yes_or_no'])
 @reply_if_group()
 def yes_or_no(_: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("yes_or_no").inc()
     return rand.one_out_of_two(lang['yes'].capitalize() + '!', lang['no'].capitalize() + '.')
 
 
 @dispatcher.message_handler(commands=['num', 'number'])
 @reply_if_group(parse_mode="Markdown")
 def get_random_number(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("number").inc()
+
     wrong_text_message = "{}: `/number [{}] <{}>`".format(lang['usage'], lang['from'], lang['to'])
 
     text = message.get_args()
@@ -98,6 +108,8 @@ def get_random_number(message: Message, lang: LanguageDictionary) -> str:
 @dispatcher.message_handler(commands=['list'])
 @reply_if_group(parse_mode="HTML")
 def get_random_item(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("list").inc()
+
     wrong_text_message = "{} <code>/list {} 1, {} 2, {} 3...</code>".format(
         lang['usage'], lang['item'], lang['item'], lang['item'])
 
@@ -117,6 +129,8 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
 @dispatcher.message_handler(commands=['seq', 'password', 'sequence'])
 @reply_if_group()
 def get_password(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("seq").inc()
+
     text = message.get_args()
     length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
@@ -128,6 +142,8 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
 @dispatcher.message_handler(commands=['seqc', 'cseq', 'passwd'])
 @reply_if_group()
 def get_password(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("seqc").inc()
+
     text = message.get_args()
     length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
@@ -140,11 +156,14 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
 
 @dispatcher.inline_handler(lambda query: True)
 async def show_inline_suggestions(query: InlineQuery) -> None:
+    inline_counter.inc()
+
     lang = localizations.get_lang(query.from_user.language_code)
     builder = InlineQueryResultsBuilder()
 
     for handler in inline_handlers.match_handlers(query.query):
-        builder.new_article(title=lang[handler.name + '_title'],
+        builder.new_article(res_id=handler.name,
+                            title=lang[handler.name + '_title'],
                             description=handler.get_description(query.query, lang),
                             text=handler.get_text(query.query, lang),
                             parse_mode=handler.parse_mode)
@@ -158,9 +177,15 @@ async def show_inline_suggestions(query: InlineQuery) -> None:
         logger.exception(err_msg)
 
 
+@dispatcher.chosen_inline_handler()
+async def inc_counter_of_chosen_result(chosen_inline_query: ChosenInlineResult) -> None:
+    chosen_inline_res_counter.labels(chosen_inline_query.result_id).inc()
+
+
 # ENTRY POINT
 
 if __name__ == '__main__':
+    start_http_server(METRICS_PORT)
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
         asyncio.get_event_loop().run_until_complete(bot.delete_webhook())
