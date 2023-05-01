@@ -65,7 +65,7 @@ def reply_if_group(**kwargs) -> callable:
 @reply_if_group(parse_mode="Markdown")
 def get_help(_: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("help").inc()
-    return lang['help'].format(DEFAULT_PASSWORD_LENGTH)
+    return lang['help'].format(*[DEFAULT_PASSWORD_LENGTH]*2)
 
 
 @dispatcher.message_handler(commands=['coin', 'flip_coin'])
