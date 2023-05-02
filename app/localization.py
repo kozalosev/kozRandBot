@@ -44,7 +44,16 @@ I'm able to respond to the following commands:
 `/seqс [length]` (aliases `/cseq`  and `/passwd`) - returns a password of _length_ ({:d} if omitted) characters consisting of only digits and latins.
 
 Note that you may use me in any chat via the inline mode!
-"""
+""",
+
+        'commands': {
+            'coin': "returns either heads or tails",
+            'yesno': "returns either yes or no",
+            'number': "returns a random number between boundaries",
+            'list': "returns a random item from a list",
+            'seq': "returns a password of N characters",
+            'seqc': "returns a password of N characters consisting of only digits and latins",
+        }
     },
 
     'ru': {
@@ -92,7 +101,16 @@ Note that you may use me in any chat via the inline mode!
 `/seqс [длина]` (псевдонимы `/cseq` и `/passwd`) - возвращает пароль из _длина_ ({:d}, если опущена) символов, причём исключительно из латиницы и цифр.
 
 Обрати внимание, что ты можешь использовать меня в любом чате через inline-режим!
-"""
+""",
+
+        'commands': {
+            'coin': "возвращает орла или решку",
+            'yesno': "возвращает да или нет",
+            'number': "возвращает случайное число в указанном диапазоне",
+            'list': "возвращает случайный элемент из списка",
+            'seq': "возвращает пароль из N символов",
+            'seqc': "возвращает пароль из N символов латиницы и цифр",
+        }
     },
     
     'pt': {
@@ -139,7 +157,16 @@ Sou capaz de responder aos seguintes comandos:
 `/seqс [comprimento]` (alternativas `/cseq` ou `/passwd`) - retorna uma senha com o número de caracteres definido em _comprimento_ ({:d}, se não tiver sido definido), consistindo apenas de números e letras latinas.
 
 Lembre-se que pode usar estes comandos em qualquer conversa através do modo inline!
-"""
+""",
+
+        'commands': {
+            'coin': "retorna cara ou coroa",
+            'yesno': "retorna sim ou não",
+            'number': "retorna um número aleatório no intervalo especificado",
+            'list': "retorna um item aleatório da sua lista",
+            'seq': "retorna uma senha de N caracteres",
+            'seqc': "retorna uma senha de N caracteres latinos e dígitos",
+        }
     },
 
 }

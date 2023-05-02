@@ -1,6 +1,5 @@
 import os
 import random
-import asyncio
 import logging
 import functools
 from typing import *
@@ -12,6 +11,7 @@ from aiogram.utils.exceptions import TelegramAPIError
 from klocmod import LocalizationsContainer, LanguageDictionary
 from prometheus_client import start_http_server, Counter
 
+import commands
 import rand
 import localization
 from data.config import *
@@ -184,12 +184,13 @@ if __name__ == '__main__':
     start_http_server(METRICS_PORT)
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
-        asyncio.get_event_loop().run_until_complete(bot.delete_webhook())
-        executor.start_polling(dispatcher, skip_updates=True)
+        executor.start_polling(dispatcher, reset_webhook=False,    # webhook is reset on skip_updates
+                               on_startup=commands.gen_startup_hook(bot, localizations), skip_updates=True)
     else:
-        async def set_webhook_async(_: Dispatcher) -> None:
+        async def setup_async(_: Dispatcher) -> None:
             await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}")
+            await commands.set_commands(bot, localizations)
 
         os.umask(0o137)  # rw-r----- for the Unix socket
         executor.start_webhook(dispatcher, path=UNIX_SOCKET, webhook_path=f"/{NAME}/{TOKEN}",
-                               on_startup=set_webhook_async, skip_updates=True)
+                               on_startup=setup_async, skip_updates=True)
