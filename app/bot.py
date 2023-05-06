@@ -1,16 +1,17 @@
 import os
 import random
-import asyncio
 import logging
 import functools
 from typing import *
 
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import Message, InlineQuery
+from aiogram.types import Message, InlineQuery, ChosenInlineResult
 from aiogram.utils.markdown import quote_html
 from aiogram.utils.exceptions import TelegramAPIError
 from klocmod import LocalizationsContainer, LanguageDictionary
+from prometheus_client import start_http_server, Counter
 
+import commands
 import rand
 import localization
 from data.config import *
@@ -26,6 +27,10 @@ dispatcher = Dispatcher(bot)
 localizations = LocalizationsContainer(localization.L)
 inline_handlers = InlineHandlersLoader()
 logger = logging.getLogger(__name__)
+
+command_calls_counter = Counter("command_used", "Calls count of a command", ['handler'])
+inline_counter = Counter("inline_used", "Inline queries count")
+chosen_inline_res_counter = Counter("inline_result_chosen", "Count of times when inline result was chosen", ['handler'])
 
 
 # DECORATORS
@@ -59,24 +64,29 @@ def reply_if_group(**kwargs) -> callable:
 @dispatcher.message_handler(commands=['start', 'help'])
 @reply_if_group(parse_mode="Markdown")
 def get_help(_: Message, lang: LanguageDictionary) -> str:
-    return lang['help'].format(DEFAULT_PASSWORD_LENGTH)
+    command_calls_counter.labels("help").inc()
+    return lang['help'].format(*[DEFAULT_PASSWORD_LENGTH]*2)
 
 
 @dispatcher.message_handler(commands=['coin', 'flip_coin'])
 @reply_if_group()
 def flip_coin(_: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("flip_coin").inc()
     return rand.one_out_of_two(lang['heads'], lang['tails'])
 
 
 @dispatcher.message_handler(commands=['yesno', 'yes_or_no'])
 @reply_if_group()
 def yes_or_no(_: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("yes_or_no").inc()
     return rand.one_out_of_two(lang['yes'].capitalize() + '!', lang['no'].capitalize() + '.')
 
 
 @dispatcher.message_handler(commands=['num', 'number'])
 @reply_if_group(parse_mode="Markdown")
 def get_random_number(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("number").inc()
+
     wrong_text_message = "{}: `/number [{}] <{}>`".format(lang['usage'], lang['from'], lang['to'])
 
     text = message.get_args()
@@ -98,6 +108,8 @@ def get_random_number(message: Message, lang: LanguageDictionary) -> str:
 @dispatcher.message_handler(commands=['list'])
 @reply_if_group(parse_mode="HTML")
 def get_random_item(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("list").inc()
+
     wrong_text_message = "{} <code>/list {} 1, {} 2, {} 3...</code>".format(
         lang['usage'], lang['item'], lang['item'], lang['item'])
 
@@ -117,10 +129,21 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
 @dispatcher.message_handler(commands=['seq', 'password', 'sequence'])
 @reply_if_group()
 def get_password(message: Message, lang: LanguageDictionary) -> str:
-    text = message.get_args()
-    length = try_parse_int(text) if text else DEFAULT_PASSWORD_LENGTH
+    command_calls_counter.labels("seq").inc()
+    return _get_password(message.get_args(), lang, PASSWORD_EXTRA_CHARS)
+
+
+@dispatcher.message_handler(commands=['seqc', 'cseq', 'passwd'])
+@reply_if_group()
+def get_password_conservative(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("seqc").inc()
+    return _get_password(message.get_args(), lang)
+
+
+def _get_password(args: str, lang: LanguageDictionary, extra_chars: str = "") -> str:
+    length = try_parse_int(args) if args else DEFAULT_PASSWORD_LENGTH
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
-        return rand.strong_password(length, PASSWORD_EXTRA_CHARS, MAX_PASSWORD_GENERATION_TRIES)
+        return rand.strong_password(length, extra_chars, MAX_PASSWORD_GENERATION_TRIES)
     else:
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
 
@@ -129,11 +152,14 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
 
 @dispatcher.inline_handler(lambda query: True)
 async def show_inline_suggestions(query: InlineQuery) -> None:
+    inline_counter.inc()
+
     lang = localizations.get_lang(query.from_user.language_code)
     builder = InlineQueryResultsBuilder()
 
     for handler in inline_handlers.match_handlers(query.query):
-        builder.new_article(title=lang[handler.name + '_title'],
+        builder.new_article(res_id=handler.name,
+                            title=lang[handler.name + '_title'],
                             description=handler.get_description(query.query, lang),
                             text=handler.get_text(query.query, lang),
                             parse_mode=handler.parse_mode)
@@ -143,21 +169,28 @@ async def show_inline_suggestions(query: InlineQuery) -> None:
     except TelegramAPIError as err:
         err_msg = str(err) + '\n'
         for i in builder.build_list():
-            err_msg += '(description="{}", text="{}")\n'.format(i.description, i.text)
+            err_msg += '(description="{}", text="{}")\n'.format(i.description, i.input_message_content.message_text)
         logger.exception(err_msg)
+
+
+@dispatcher.chosen_inline_handler()
+async def inc_counter_of_chosen_result(chosen_inline_query: ChosenInlineResult) -> None:
+    chosen_inline_res_counter.labels(chosen_inline_query.result_id).inc()
 
 
 # ENTRY POINT
 
 if __name__ == '__main__':
+    start_http_server(METRICS_PORT)
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
-        asyncio.get_event_loop().run_until_complete(bot.delete_webhook())
-        executor.start_polling(dispatcher, skip_updates=True)
+        executor.start_polling(dispatcher, reset_webhook=False,    # webhook is reset on skip_updates
+                               on_startup=commands.gen_startup_hook(bot, localizations), skip_updates=True)
     else:
-        async def set_webhook_async(_: Dispatcher) -> None:
+        async def setup_async(_: Dispatcher) -> None:
             await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}")
+            await commands.set_commands(bot, localizations)
 
         os.umask(0o137)  # rw-r----- for the Unix socket
         executor.start_webhook(dispatcher, path=UNIX_SOCKET, webhook_path=f"/{NAME}/{TOKEN}",
-                               on_startup=set_webhook_async, skip_updates=True)
+                               on_startup=setup_async, skip_updates=True)

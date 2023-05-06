@@ -28,11 +28,14 @@ class RandNumHandler(Markdown, InlineHandler):
 
     @classmethod
     def can_process(cls, query: str) -> bool:
-        return re.match(cls.RANGE_REGEXP, query) or try_parse_int(query) is not None
+        parsed = try_parse_int(query)
+        return parsed is not None and parsed != 0 or re.match(cls.RANGE_REGEXP, query)
 
     def get_text(self, query: str, lang: LanguageDictionary) -> str:
         min_val, max_val = self._get_range(query)
-        if min_val is None:
+        if min_val is None and max_val == 1:
+            return lang['rand_num_from_zero_to_one_message'].format(rand.maximum(0))
+        elif min_val is None:
             return lang['rand_num_from_zero_message'].format(max_val, rand.maximum(max_val))
         else:
             return lang['rand_num_message'].format(min_val, max_val, rand.between(min_val, max_val))

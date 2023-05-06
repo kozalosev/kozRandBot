@@ -9,19 +9,21 @@ class Items:
 
     def __init__(self, string: str):
         if ';' in string:
-            self._items = re.split(r";\s*", string)
-            return
-        if ',' in string:
+            items = re.split(r";\s*", string)
+        elif ',' in string:
             items = re.split(r",\s*", string)
             items = list(map(self._strip_conjunctions, items))
             last_items = self._try_search_for_items_separated_by_conjunctions(self.conjunctions, items[-1])
             if last_items:
-                self._items = items[:-1] + last_items
+                items = items[:-1] + last_items
             else:
-                self._items = items
-            return
+                items = items
+        else:
+            items = self._try_search_for_items_separated_by_conjunctions(self.conjunctions, string)
 
-        self._items = self._try_search_for_items_separated_by_conjunctions(self.conjunctions, string)
+        if not items:
+            items = []
+        self._items = [x for x in items if len(x) > 0]
 
     @property
     def acceptable(self) -> bool:
