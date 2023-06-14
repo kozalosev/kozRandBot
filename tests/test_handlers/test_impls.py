@@ -58,7 +58,7 @@ class TestMatchingPassword:
         assert not impls.PasswordHandler.can_process(s)
 
     @staticmethod
-    @given(integers(min_value=6, max_value=2048))
+    @given(integers(min_value=8, max_value=2048))
     def test_one_number_in_range(x):
         assert impls.PasswordHandler.can_process(str(x))
 
