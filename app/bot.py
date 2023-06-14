@@ -5,6 +5,7 @@ import functools
 from typing import *
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.dispatcher.filters import ChatTypeFilter
 from aiogram.types import Message, InlineQuery, ChosenInlineResult
 from aiogram.utils.markdown import quote_html
 from aiogram.utils.exceptions import TelegramAPIError
@@ -26,6 +27,7 @@ bot = Bot(TOKEN)
 dispatcher = Dispatcher(bot)
 localizations = LocalizationsContainer(localization.L)
 inline_handlers = InlineHandlersLoader()
+group_or_super_group_filter = ChatTypeFilter({types.ChatType.GROUP, types.ChatType.SUPERGROUP})
 logger = logging.getLogger(__name__)
 
 command_calls_counter = Counter("command_used", "Calls count of a command", ['handler'])
@@ -51,7 +53,7 @@ def reply_if_group(**kwargs) -> callable:
         async def wrapper(message: Message) -> None:
             lang = localizations.get_lang(message.from_user.language_code)
             text = func(message, lang)
-            if types.ChatType.is_group_or_super_group(message.chat):
+            if await group_or_super_group_filter.check(message):
                 await message.reply(text, **kwargs)
             else:
                 await bot.send_message(message.chat.id, text, **kwargs)
