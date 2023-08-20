@@ -4,6 +4,8 @@ import re
 import random
 import string
 import logging
+import secrets
+import uuid as std_uuid
 from typing import *
 
 
@@ -80,3 +82,18 @@ def _is_password_strong(pwd: str, extra_chars: str) -> bool:
     if len(extra_chars) > 0 and not any(x in pwd for x in extra_chars):
         return False
     return True
+
+
+def hex_password(nbytes: int) -> str:
+    """
+    Generate a string of `nbytes` bytes (i.e. 2*nbytes characters long) in
+    a secure manner applicable for use as a password.
+
+    :param nbytes: the count of bytes in the generated HEX password
+    """
+    return secrets.token_hex(abs(nbytes))
+
+
+def uuid() -> str:
+    """Generate a randomly generated Universal Unique Identifier"""
+    return str(std_uuid.uuid4())

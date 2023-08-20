@@ -51,28 +51,38 @@ class TestMatchingPassword:
     @staticmethod
     def test_empty_str():
         assert impls.PasswordHandler.can_process("")
+        assert not impls.HEXPasswordHandler.can_process("")
+
+    @staticmethod
+    def test_hex_str():
+        assert impls.HEXPasswordHandler.can_process("hex")
 
     @staticmethod
     @pytest.mark.parametrize("s", ["foo", "foo bar", "100 bar"])
     def test_non_numerical_strings(s):
         assert not impls.PasswordHandler.can_process(s)
+        assert not impls.HEXPasswordHandler.can_process(f"hex {s}")
 
     @staticmethod
     @given(integers(min_value=8, max_value=2048))
     def test_one_number_in_range(x):
         assert impls.PasswordHandler.can_process(str(x))
+        assert impls.HEXPasswordHandler.can_process(f"hex {x}")
 
     @staticmethod
     @given(integers(min_value=-5, max_value=5))
     def test_too_small_numbers(x):
         assert not impls.PasswordHandler.can_process(str(x))
+        assert not impls.HEXPasswordHandler.can_process(f"hex {x}")
 
     @staticmethod
     @given(integers(min_value=2049))
     def test_too_bit_positive_numbers(x):
         assert not impls.PasswordHandler.can_process(str(x))
+        assert not impls.HEXPasswordHandler.can_process(f"hex {x}")
 
     @staticmethod
     @given(integers(max_value=-2049))
     def test_too_bit_negative_numbers(x):
         assert not impls.PasswordHandler.can_process(str(x))
+        assert not impls.HEXPasswordHandler.can_process(f"hex {x}")

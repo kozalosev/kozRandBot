@@ -9,7 +9,7 @@ from handler import impls
 def test_load_impls():
     loader = InlineHandlersLoader()
     expected_set = {impls.FlipCoinHandler, impls.RandNumHandler, impls.YesNoHandler, impls.RandItemHandler,
-                    impls.PasswordHandler}
+                    impls.PasswordHandler, impls.HEXPasswordHandler, impls.UUIDHandler}
     assert expected_set == loader.handlers
 
 

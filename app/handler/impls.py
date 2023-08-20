@@ -101,3 +101,34 @@ class PasswordHandler(HTML, InlineHandler):
             if not (self._length and config.MIN_PASSWORD_LENGTH <= self._length <= config.MAX_PASSWORD_LENGTH):
                 self._length = config.DEFAULT_PASSWORD_LENGTH
         return self._length
+
+
+class HEXPasswordHandler(PasswordHandler):
+    @classmethod
+    def can_process(cls, query: str) -> bool:
+        query = query.lower()
+        arg = query.lstrip("hex").strip()
+        return query.startswith("hex") and super().can_process(arg)
+
+    def get_text(self, query: str, lang: LanguageDictionary) -> str:
+        length = super()._get_length(query)
+        password = rand.hex_password(length)
+        return lang['hex_password_message'].format(length, password)
+
+    def get_description(self, query: str, lang: LanguageDictionary) -> str:
+        template = super(PasswordHandler, self).get_description(query, lang)
+        length = self._get_length(query)
+        return template.format(length, 2 * length)
+
+    def _get_length(self, query: str) -> int:
+        arg = query.lower().lstrip("hex").strip()
+        return super()._get_length(arg)
+
+
+class UUIDHandler(HTML, InlineHandler):
+    @classmethod
+    def can_process(cls, query: str) -> bool:
+        return query.lower() == "uuid"
+
+    def get_text(self, query: str, lang: LanguageDictionary) -> str:
+        return lang['uuid_message'].format(rand.uuid())

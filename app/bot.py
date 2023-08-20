@@ -132,22 +132,40 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
 @reply_if_group()
 def get_password(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seq").inc()
-    return _get_password(message.get_args(), lang, PASSWORD_EXTRA_CHARS)
+    generator = functools.partial(rand.strong_password,
+                                  extra_chars=PASSWORD_EXTRA_CHARS,
+                                  max_tries=MAX_PASSWORD_GENERATION_TRIES)
+    return _get_password(message.get_args(), lang, generator)
 
 
 @dispatcher.message_handler(commands=['seqc', 'cseq', 'passwd'])
 @reply_if_group()
 def get_password_conservative(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seqc").inc()
-    return _get_password(message.get_args(), lang)
+    generator = functools.partial(rand.strong_password, max_tries=MAX_PASSWORD_GENERATION_TRIES)
+    return _get_password(message.get_args(), lang, generator)
 
 
-def _get_password(args: str, lang: LanguageDictionary, extra_chars: str = "") -> str:
+@dispatcher.message_handler(commands=['hex'])
+@reply_if_group()
+def get_hex_password(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("hex").inc()
+    return _get_password(message.get_args(), lang, rand.hex_password)
+
+
+def _get_password(args: str, lang: LanguageDictionary, generator: Callable[[int], str]) -> str:
     length = try_parse_int(args) if args else DEFAULT_PASSWORD_LENGTH
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
-        return rand.strong_password(length, extra_chars, MAX_PASSWORD_GENERATION_TRIES)
+        return generator(length)
     else:
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+
+
+@dispatcher.message_handler(commands=['uuid'])
+@reply_if_group()
+def get_uuid(message: Message, lang: LanguageDictionary) -> str:
+    command_calls_counter.labels("uuid").inc()
+    return rand.uuid()
 
 
 # INLINE HANDLER
