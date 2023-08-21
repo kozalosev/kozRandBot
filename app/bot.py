@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 command_calls_counter = Counter("command_used", "Calls count of a command", ['handler'])
 inline_counter = Counter("inline_used", "Inline queries count")
 chosen_inline_res_counter = Counter("inline_result_chosen", "Count of times when inline result was chosen", ['handler'])
+password_length_counter = Counter("passwords_generated", "Count of generated passwords split by length", ['length'])
 
 
 # DECORATORS
@@ -155,6 +156,7 @@ def get_hex_password(message: Message, lang: LanguageDictionary) -> str:
 
 def _get_password(args: str, lang: LanguageDictionary, generator: Callable[[int], str]) -> str:
     length = try_parse_int(args) if args else DEFAULT_PASSWORD_LENGTH
+    password_length_counter.labels(length).inc()
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
         return generator(length)
     else:
