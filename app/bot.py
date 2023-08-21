@@ -1,5 +1,4 @@
 import os
-import random
 import logging
 import functools
 from typing import *
@@ -16,7 +15,7 @@ import commands
 import rand
 import localization
 from data.config import *
-from util import Items, try_parse_int, try_extract_numbers
+from util import Items, try_parse_int, try_extract_numbers, from_premium
 from queryutil import InlineQueryResultsBuilder
 from handler import InlineHandlersLoader
 
@@ -73,16 +72,16 @@ def get_help(_: Message, lang: LanguageDictionary) -> str:
 
 @dispatcher.message_handler(commands=['coin', 'flip_coin'])
 @reply_if_group()
-def flip_coin(_: Message, lang: LanguageDictionary) -> str:
+def flip_coin(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("flip_coin").inc()
-    return rand.one_out_of_two(lang['heads'], lang['tails'])
+    return rand.one_out_of_two(lang['heads'], lang['tails'], from_premium(message))
 
 
 @dispatcher.message_handler(commands=['yesno', 'yes_or_no'])
 @reply_if_group()
-def yes_or_no(_: Message, lang: LanguageDictionary) -> str:
+def yes_or_no(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("yes_or_no").inc()
-    return rand.one_out_of_two(lang['yes'].capitalize() + '!', lang['no'].capitalize() + '.')
+    return rand.one_out_of_two(lang['yes'].capitalize() + '!', lang['no'].capitalize() + '.', from_premium(message))
 
 
 @dispatcher.message_handler(commands=['num', 'number'])
@@ -101,10 +100,11 @@ def get_random_number(message: Message, lang: LanguageDictionary) -> str:
         if not numbers:
             return wrong_text_message
 
+    use_premium_random = from_premium(message)
     if len(numbers) > 1:
-        rand_num = rand.between(numbers[0], numbers[1])
+        rand_num = rand.between(numbers[0], numbers[1], use_premium_random)
     else:
-        rand_num = rand.maximum(numbers[0])
+        rand_num = rand.maximum(numbers[0], use_premium_random)
     return str(rand_num)
 
 
@@ -124,7 +124,8 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
 
     items = Items(text)
     if items.acceptable:
-        return quote_html(random.choice(items.list))
+        item = rand.item_from_list(items.list, from_premium(message))
+        return quote_html(item)
     else:
         return wrong_text_message
 
@@ -135,7 +136,8 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seq").inc()
     generator = functools.partial(rand.strong_password,
                                   extra_chars=PASSWORD_EXTRA_CHARS,
-                                  max_tries=MAX_PASSWORD_GENERATION_TRIES)
+                                  max_tries=MAX_PASSWORD_GENERATION_TRIES,
+                                  sys_rand=from_premium(message))
     return _get_password(message.get_args(), lang, generator)
 
 
@@ -143,7 +145,9 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
 @reply_if_group()
 def get_password_conservative(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seqc").inc()
-    generator = functools.partial(rand.strong_password, max_tries=MAX_PASSWORD_GENERATION_TRIES)
+    generator = functools.partial(rand.strong_password,
+                                  max_tries=MAX_PASSWORD_GENERATION_TRIES,
+                                  sys_rand=from_premium(message))
     return _get_password(message.get_args(), lang, generator)
 
 
@@ -183,7 +187,7 @@ async def show_inline_suggestions(query: InlineQuery) -> None:
         builder.new_article(res_id=handler.name,
                             title=lang[handler.name + '_title'],
                             description=handler.get_description(query.query, lang),
-                            text=handler.get_text(query.query, lang),
+                            text=handler.get_text(query.query, lang, from_premium(query)),
                             parse_mode=handler.parse_mode)
 
     try:

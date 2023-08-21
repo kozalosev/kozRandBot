@@ -45,7 +45,7 @@ class InlineHandler(ABC):
         pass
 
     @abstractmethod
-    def get_text(self, query: str, lang: LanguageDictionary) -> str:
+    def get_text(self, query: str, lang: LanguageDictionary, premium: bool) -> str:
         pass
 
     def get_description(self, query: str, lang: LanguageDictionary) -> str:

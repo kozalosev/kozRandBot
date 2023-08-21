@@ -1,5 +1,7 @@
 import re
-from typing import Optional, List
+from typing import Optional, List, Union
+from aiogram.types import Message, InlineQuery
+from data import config
 
 
 class Items:
@@ -80,3 +82,8 @@ def try_extract_numbers(text: str) -> Optional[List[int]]:
     if None in numbers:
         return None
     return numbers
+
+
+def from_premium(obj: Union[Message, InlineQuery]) -> bool:
+    """Temporary stub to match a user's ID with the list specified in the config file."""
+    return obj.from_user.id in config.PREMIUM_USERS_UID

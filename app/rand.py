@@ -10,35 +10,55 @@ from typing import *
 
 
 __logger = logging.getLogger("rand")
+T = TypeVar('T')
+K = TypeVar('K')
+
+__base_rnd = random.Random()
+__sys_rnd = random.SystemRandom()
 
 
-def one_out_of_two(first, second) -> Any:
+def one_out_of_two(first: T, second: K, sys_rand: bool = False) -> Union[T, K]:
     """:return: either the first or second argument randomly."""
-    return random.choice([first, second])
+    return _get_rnd(sys_rand).choice([first, second])
 
 
-def between(min_val: int, max_val: int) -> int:
+def item_from_list(items: List[T], sys_rand: bool = False) -> T:
+    """:return: a random item from the list"""
+    return _get_rnd(sys_rand).choice(items)
+
+
+def between(min_val: int, max_val: int, sys_rand: bool = False) -> int:
     """:return: a random number in range [min_val; max_val]"""
     if min_val > max_val:
         max_val, min_val = min_val, max_val
-    return random.randint(min_val, max_val)
+    return _get_rnd(sys_rand).randint(min_val, max_val)
 
 
-def maximum(num: int) -> Union[int, float]:
+def maximum(num: int, sys_rand: bool = False) -> Union[int, float]:
     """
     :return: a random integer number in range [1, num] if 'num' is positive;
         integer number in range [num; -1] if it's negative;
         float number in range [0.0; 1.0) if it equals to 0
     """
+    rnd = _get_rnd(sys_rand)
     if num == 0:
-        return random.random()
+        return rnd.random()
     elif num < 0:
-        return -random.randint(1, abs(num))
+        return -rnd.randint(1, abs(num))
     else:
-        return random.randint(1, num)
+        return rnd.randint(1, num)
 
 
-def password(length: int, extra_chars: str = "") -> str:
+def _get_rnd(sys_rand: bool) -> random.Random:
+    if sys_rand:
+        __logger.debug("SystemRandom is used")
+        return __sys_rnd
+    else:
+        __logger.debug("Random is used")
+        return __base_rnd
+
+
+def password(length: int, extra_chars: str = "", sys_rand: bool = False) -> str:
     """
     Generate a secure password of specified length.
 
@@ -46,12 +66,14 @@ def password(length: int, extra_chars: str = "") -> str:
 
     :param length: the length of the generated password
     :param extra_chars: additional non-alphanumeric characters that will be used in the password
+    :param sys_rand: use a system source of randomness
     """
     chars = string.ascii_letters + string.digits + extra_chars
-    return ''.join(random.SystemRandom().choice(chars) for _ in range(abs(length)))
+    rnd = random.SystemRandom() if sys_rand else random.Random()
+    return ''.join(rnd.choice(chars) for _ in range(abs(length)))
 
 
-def strong_password(length: int, extra_chars: str = "", max_tries: int = 100) -> str:
+def strong_password(length: int, extra_chars: str = "", max_tries: int = 100, sys_rand: bool = False) -> str:
     """
     Generate a secure password of specified length as the 'password' function do, but also
     ensures that password is strong enough.
@@ -61,6 +83,7 @@ def strong_password(length: int, extra_chars: str = "", max_tries: int = 100) ->
     :param length: the length of the generated password
     :param extra_chars: additional non-alphanumeric characters that will be used in the password
     :param max_tries: used as a threshold value to prevent the infinite loop to occur
+    :param sys_rand: use a system source of randomness
     """
     generated_password = ""
     fuse = 0
@@ -69,7 +92,7 @@ def strong_password(length: int, extra_chars: str = "", max_tries: int = 100) ->
             __logger.warning("Tried to generate proper password over {:d} times!".format(max_tries))
             break
         fuse += 1
-        generated_password = password(length, extra_chars)
+        generated_password = password(length, extra_chars, sys_rand)
     __logger.info("A password was generated for {:d} times".format(fuse))
     return generated_password
 

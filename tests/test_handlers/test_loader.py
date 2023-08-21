@@ -30,7 +30,7 @@ def test_matching_impls(query, expected_type_set):
 
 def test_name_property():
     class FooBar(Universal, InlineHandler):
-        def get_text(self, query: str, lang: LanguageDictionary) -> str:
+        def get_text(self, query: str, lang: LanguageDictionary, premium: bool) -> str:
             return ""
 
     class FooBarInline(FooBar):

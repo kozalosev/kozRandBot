@@ -18,6 +18,12 @@ def test_one_out_of_two(a, b):
     assert not all(v == b for v in values)
 
 
+def test_item_from_list():
+    items = ['foo', 'bar', 'baz']
+    values = [rand.item_from_list(items) for _ in range(100)]
+    assert all(v in items for v in values)
+
+
 @given(integers(), integers())
 def test_between(n, m):
     assume(n <= m)
