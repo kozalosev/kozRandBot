@@ -81,7 +81,9 @@ def flip_coin(message: Message, lang: LanguageDictionary) -> str:
 @reply_if_group()
 def yes_or_no(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("yes_or_no").inc()
-    return rand.one_out_of_two(lang['yes'].capitalize() + '!', lang['no'].capitalize() + '.', from_premium(message))
+    yes = lang['yes'].capitalize() + '!'
+    no = lang['no'].capitalize() + '.'
+    return rand.one_out_of_two(yes, no, from_premium(message))
 
 
 @dispatcher.message_handler(commands=['num', 'number'])

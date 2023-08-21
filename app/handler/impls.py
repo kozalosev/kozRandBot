@@ -125,7 +125,7 @@ class HEXPasswordHandler(PasswordHandler):
         return super()._get_length(arg)
 
 
-class UUIDHandler(HTML, InlineHandler):
+class UUIDHandler(Markdown, InlineHandler):
     @classmethod
     def can_process(cls, query: str) -> bool:
         return query.lower() == "uuid"

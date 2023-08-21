@@ -15,16 +15,16 @@ L = {
 
         'password_title': 'Generate a password!',
         'password_description': 'Returns a random sequence of {:d} characters.',
-        'password_message': 'A generated password of {:d} characters is <b>{}</b>.',
+        'password_message': 'A generated password of {:d} characters is <code>{}</code>.',
         'password_length_invalid': 'A password cannot be shorter than {:d} characters or longer than {:d}!',
 
         'hex_password_title': 'Generate a hexadecimal bytes password!',
         'hex_password_description': 'Returns {:d} hexadecimal bytes ({:d} characters long)',
-        'hex_password_message': 'A hexadecimal string of {:d} bytes is <b>{}</b>.',
+        'hex_password_message': 'A hexadecimal string of {:d} bytes is <code>{}</code>.',
 
-        'uuid_title': 'Generate a randomly generated Universal Unique Identifier!',
+        'uuid_title': 'Generate a UUID!',
         'uuid_description': 'Returns a randomly generated Universal Unique Identifier.',
-        'uuid_message': 'UUID is <b>{}</b>.',
+        'uuid_message': 'UUID is `{}`.',
 
         'rand_num_title': 'Get a random number!',
         'rand_num_description': 'Returns a random number from {:d} to {:d}.',
@@ -57,6 +57,7 @@ Note that you may use me in any chat via the inline mode!
 """,
 
         'commands': {
+            'help': "prints a help message",
             'coin': "returns either heads or tails",
             'yesno': "returns either yes or no",
             'number': "returns a random number between boundaries",
@@ -83,16 +84,16 @@ Note that you may use me in any chat via the inline mode!
 
         'password_title': 'Сгенерировать пароль!',
         'password_description': 'Возвращает случайную последовательность из {:d} символов.',
-        'password_message': 'Сгенерированный пароль из {:d} символов: <b>{}</b>.',
+        'password_message': 'Сгенерированный пароль из {:d} символов: <code>{}</code>.',
         'password_length_invalid': 'Пароль не может состоять меньше чем из {:d} символов или больше чем из {:d}!',
 
         'hex_password_title': 'Сгенерировать пароль из шестнадцатеричных байтов!',
         'hex_password_description': 'Возвращает пароль из {:d} байтов ({:d} символов)',
-        'hex_password_message': 'Шестнадцатеричная строка из {:d} байтов: <b>{}</b>.',
+        'hex_password_message': 'Шестнадцатеричная строка из {:d} байтов: <code>{}</code>.',
 
-        'uuid_title': 'Сгенерировать случайный UUID!',
+        'uuid_title': 'Сгенерировать UUID!',
         'uuid_description': 'Возвращает случайно сгенерированный UUID.',
-        'uuid_message': 'UUID: <b>{}</b>.',
+        'uuid_message': 'UUID: `{}`.',
 
         'rand_num_title': 'Получить случайное число!',
         'rand_num_description': 'Возвращает случайное число от {:d} до {:d}.',
@@ -126,6 +127,7 @@ Note that you may use me in any chat via the inline mode!
 """,
 
         'commands': {
+            'help': "печатает сообщение со справкой о командах",
             'coin': "возвращает орла или решку",
             'yesno': "возвращает да или нет",
             'number': "возвращает случайное число в указанном диапазоне",
@@ -152,16 +154,16 @@ Note that you may use me in any chat via the inline mode!
 
         'password_title': 'Gerar uma senha!',
         'password_description': 'Retorna uma sequência aleatória de caracteres {:d}.',
-        'password_message': 'Uma senha gerada com {:d} caracteres é <b>{}</b>.',
+        'password_message': 'Uma senha gerada com {:d} caracteres é <code>{}</code>.',
         'password_length_invalid': 'Uma senha não pode ter menos de {:d} caracteres ou mais de {:d}!',
 
         'hex_password_title': 'Gerar uma senha de bytes hexadecimais!',
         'hex_password_description': 'Retorna {:d} bytes hexadecimais ({:d} caracteres)',
-        'hex_password_message': 'Uma string hexadecimal de {:d} bytes é <b>{}</b>.',
+        'hex_password_message': 'Uma string hexadecimal de {:d} bytes é <code>{}</code>.',
 
-        'uuid_title': 'Gerar um UUID gerado aleatoriamente!',
+        'uuid_title': 'Gerar um UUID!',
         'uuid_description': 'Retorna um UUID gerado aleatoriamente.',
-        'uuid_message': 'UUID: <b>{}</b>.',
+        'uuid_message': 'UUID: `{}`.',
 
         'rand_num_title': 'Obter um número aleatório!',
         'rand_num_description': 'Retorna um número aleatório entre {:d} e {:d}.',
@@ -194,6 +196,7 @@ Lembre-se que pode usar estes comandos em qualquer conversa através do modo inl
 """,
 
         'commands': {
+            'help': "imprime uma mensagem de ajuda",
             'coin': "retorna cara ou coroa",
             'yesno': "retorna sim ou não",
             'number': "retorna um número aleatório no intervalo especificado",
