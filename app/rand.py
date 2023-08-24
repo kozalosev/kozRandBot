@@ -58,32 +58,33 @@ def _get_rnd(sys_rand: bool) -> random.Random:
         return __base_rnd
 
 
-def password(length: int, extra_chars: str = "", sys_rand: bool = False) -> str:
+def password(length: int, extra_chars: str = "") -> str:
     """
     Generate a secure password of specified length.
+
+    The system based PRNG is used for passwords for all users.
 
     See: https://stackoverflow.com/a/23728630
 
     :param length: the length of the generated password
     :param extra_chars: additional non-alphanumeric characters that will be used in the password
-    :param sys_rand: use a system source of randomness
     """
     chars = string.ascii_letters + string.digits + extra_chars
-    rnd = random.SystemRandom() if sys_rand else random.Random()
-    return ''.join(rnd.choice(chars) for _ in range(abs(length)))
+    return ''.join(__sys_rnd.choice(chars) for _ in range(abs(length)))
 
 
-def strong_password(length: int, extra_chars: str = "", max_tries: int = 100, sys_rand: bool = False) -> str:
+def strong_password(length: int, extra_chars: str = "", max_tries: int = 100) -> str:
     """
     Generate a secure password of specified length as the 'password' function do, but also
     ensures that password is strong enough.
+
+    The system based PRNG is used for passwords for all users.
 
     See: https://github.com/kozalosev/kozRandBot/issues/2
 
     :param length: the length of the generated password
     :param extra_chars: additional non-alphanumeric characters that will be used in the password
     :param max_tries: used as a threshold value to prevent the infinite loop to occur
-    :param sys_rand: use a system source of randomness
     """
     generated_password = ""
     fuse = 0
@@ -92,7 +93,7 @@ def strong_password(length: int, extra_chars: str = "", max_tries: int = 100, sy
             __logger.warning("Tried to generate proper password over {:d} times!".format(max_tries))
             break
         fuse += 1
-        generated_password = password(length, extra_chars, sys_rand)
+        generated_password = password(length, extra_chars)
     __logger.info("A password was generated for {:d} times".format(fuse))
     return generated_password
 

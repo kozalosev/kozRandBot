@@ -138,8 +138,7 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seq").inc()
     generator = functools.partial(rand.strong_password,
                                   extra_chars=PASSWORD_EXTRA_CHARS,
-                                  max_tries=MAX_PASSWORD_GENERATION_TRIES,
-                                  sys_rand=from_premium(message))
+                                  max_tries=MAX_PASSWORD_GENERATION_TRIES)
     return _get_password(message.get_args(), lang, generator)
 
 
@@ -148,8 +147,7 @@ def get_password(message: Message, lang: LanguageDictionary) -> str:
 def get_password_conservative(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seqc").inc()
     generator = functools.partial(rand.strong_password,
-                                  max_tries=MAX_PASSWORD_GENERATION_TRIES,
-                                  sys_rand=from_premium(message))
+                                  max_tries=MAX_PASSWORD_GENERATION_TRIES)
     return _get_password(message.get_args(), lang, generator)
 
 
