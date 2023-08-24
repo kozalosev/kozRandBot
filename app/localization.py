@@ -15,8 +15,16 @@ L = {
 
         'password_title': 'Generate a password!',
         'password_description': 'Returns a random sequence of {:d} characters.',
-        'password_message': 'A generated password of {:d} characters is <b>{}</b>.',
+        'password_message': 'A generated password of {:d} characters is <code>{}</code>.',
         'password_length_invalid': 'A password cannot be shorter than {:d} characters or longer than {:d}!',
+
+        'hex_password_title': 'Generate a hexadecimal bytes password!',
+        'hex_password_description': 'Returns {:d} hexadecimal bytes ({:d} characters long)',
+        'hex_password_message': 'A hexadecimal string of {:d} bytes is <code>{}</code>.',
+
+        'uuid_title': 'Generate a UUID!',
+        'uuid_description': 'Returns a randomly generated Universal Unique Identifier.',
+        'uuid_message': 'UUID is `{}`.',
 
         'rand_num_title': 'Get a random number!',
         'rand_num_description': 'Returns a random number from {:d} to {:d}.',
@@ -42,17 +50,22 @@ I'm able to respond to the following commands:
 `/list item 1, item 2...` - returns a *random item* from your _list_ (a semicolon can be used as a separator too).
 `/seq [length]` (aliases `/password` and `/sequence`) - returns a password of _length_ ({:d} if omitted) characters.
 `/seqс [length]` (aliases `/cseq`  and `/passwd`) - returns a password of _length_ ({:d} if omitted) characters consisting of only digits and latins.
+`/hex [length]` - returns N hexadecimal bytes (2N characters) generated in a secure manner and applicable for use as a password.
+`/uuid` - returns a randomly generated Universal Unique Identifier.
 
 Note that you may use me in any chat via the inline mode!
 """,
 
         'commands': {
+            'help': "prints a help message",
             'coin': "returns either heads or tails",
             'yesno': "returns either yes or no",
             'number': "returns a random number between boundaries",
             'list': "returns a random item from a list",
             'seq': "returns a password of N characters",
             'seqc': "returns a password of N characters consisting of only digits and latins",
+            'hex': "returns N HEX bytes (2N characters long)",
+            'uuid': "returns a randomly generated Universal Unique Identifier",
         }
     },
 
@@ -71,8 +84,16 @@ Note that you may use me in any chat via the inline mode!
 
         'password_title': 'Сгенерировать пароль!',
         'password_description': 'Возвращает случайную последовательность из {:d} символов.',
-        'password_message': 'Сгенерированный пароль из {:d} символов: <b>{}</b>.',
+        'password_message': 'Сгенерированный пароль из {:d} символов: <code>{}</code>.',
         'password_length_invalid': 'Пароль не может состоять меньше чем из {:d} символов или больше чем из {:d}!',
+
+        'hex_password_title': 'Сгенерировать пароль из шестнадцатеричных байтов!',
+        'hex_password_description': 'Возвращает пароль из {:d} байтов ({:d} символов)',
+        'hex_password_message': 'Шестнадцатеричная строка из {:d} байтов: <code>{}</code>.',
+
+        'uuid_title': 'Сгенерировать UUID!',
+        'uuid_description': 'Возвращает случайно сгенерированный UUID.',
+        'uuid_message': 'UUID: `{}`.',
 
         'rand_num_title': 'Получить случайное число!',
         'rand_num_description': 'Возвращает случайное число от {:d} до {:d}.',
@@ -99,17 +120,22 @@ Note that you may use me in any chat via the inline mode!
 точка с запятой (*;*)).
 `/seq [длина]` (псевдонимы: `/password` и `/sequence`) - возвращает пароль из _длина_ ({:d}, если опущена) символов.
 `/seqс [длина]` (псевдонимы `/cseq` и `/passwd`) - возвращает пароль из _длина_ ({:d}, если опущена) символов, причём исключительно из латиницы и цифр.
+`/hex [length]` - возвращает N шестнадцатеричных байтов (2N символов), сгенерированных по правилам безопасности и пригодных для использования в качестве пароля.
+`/uuid` - возвращает случайно сгенерированный UUID.
 
 Обрати внимание, что ты можешь использовать меня в любом чате через inline-режим!
 """,
 
         'commands': {
+            'help': "печатает сообщение со справкой о командах",
             'coin': "возвращает орла или решку",
             'yesno': "возвращает да или нет",
             'number': "возвращает случайное число в указанном диапазоне",
             'list': "возвращает случайный элемент из списка",
             'seq': "возвращает пароль из N символов",
             'seqc': "возвращает пароль из N символов латиницы и цифр",
+            'hex': "возвращает N шестнадцатеричных байтов (2N символов)",
+            'uuid': "возвращает случайно сгенерированный UUID",
         }
     },
     
@@ -128,8 +154,16 @@ Note that you may use me in any chat via the inline mode!
 
         'password_title': 'Gerar uma senha!',
         'password_description': 'Retorna uma sequência aleatória de caracteres {:d}.',
-        'password_message': 'Uma senha gerada com {:d} caracteres é <b>{}</b>.',
+        'password_message': 'Uma senha gerada com {:d} caracteres é <code>{}</code>.',
         'password_length_invalid': 'Uma senha não pode ter menos de {:d} caracteres ou mais de {:d}!',
+
+        'hex_password_title': 'Gerar uma senha de bytes hexadecimais!',
+        'hex_password_description': 'Retorna {:d} bytes hexadecimais ({:d} caracteres)',
+        'hex_password_message': 'Uma string hexadecimal de {:d} bytes é <code>{}</code>.',
+
+        'uuid_title': 'Gerar um UUID!',
+        'uuid_description': 'Retorna um UUID gerado aleatoriamente.',
+        'uuid_message': 'UUID: `{}`.',
 
         'rand_num_title': 'Obter um número aleatório!',
         'rand_num_description': 'Retorna um número aleatório entre {:d} e {:d}.',
@@ -155,17 +189,22 @@ Sou capaz de responder aos seguintes comandos:
 `/list item 1, item 2...` - retorna um *item aleatório* da sua _lista_ (é possível usar ponto-e-vírgula para separar itens).
 `/seq [comprimento]` (alternativas `/password` ou `/sequence`) - retorna uma senha com o número de caracteres definido em _comprimento_ ({:d}, se não tiver sido definido).
 `/seqс [comprimento]` (alternativas `/cseq` ou `/passwd`) - retorna uma senha com o número de caracteres definido em _comprimento_ ({:d}, se não tiver sido definido), consistindo apenas de números e letras latinas.
+`/hex [comprimento]` - retorna N bytes hexadecimais (2N caracteres) gerados de maneira segura e aplicáveis para uso como senha.
+`/uuid` - retorna um UUID gerado aleatoriamente.
 
 Lembre-se que pode usar estes comandos em qualquer conversa através do modo inline!
 """,
 
         'commands': {
+            'help': "imprime uma mensagem de ajuda",
             'coin': "retorna cara ou coroa",
             'yesno': "retorna sim ou não",
             'number': "retorna um número aleatório no intervalo especificado",
             'list': "retorna um item aleatório da sua lista",
             'seq': "retorna uma senha de N caracteres",
             'seqc': "retorna uma senha de N caracteres latinos e dígitos",
+            'hex': "retorna N bytes hexadecimais (2N caracteres)",
+            'uuid': "retorna um UUID gerado aleatoriamente",
         }
     },
 

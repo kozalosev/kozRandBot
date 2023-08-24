@@ -9,7 +9,7 @@ from handler import impls
 def test_load_impls():
     loader = InlineHandlersLoader()
     expected_set = {impls.FlipCoinHandler, impls.RandNumHandler, impls.YesNoHandler, impls.RandItemHandler,
-                    impls.PasswordHandler}
+                    impls.PasswordHandler, impls.HEXPasswordHandler, impls.UUIDHandler}
     assert expected_set == loader.handlers
 
 
@@ -30,7 +30,7 @@ def test_matching_impls(query, expected_type_set):
 
 def test_name_property():
     class FooBar(Universal, InlineHandler):
-        def get_text(self, query: str, lang: LanguageDictionary) -> str:
+        def get_text(self, query: str, lang: LanguageDictionary, premium: bool) -> str:
             return ""
 
     class FooBarInline(FooBar):

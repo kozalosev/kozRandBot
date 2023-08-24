@@ -18,6 +18,12 @@ def test_one_out_of_two(a, b):
     assert not all(v == b for v in values)
 
 
+def test_item_from_list():
+    items = ['foo', 'bar', 'baz']
+    values = [rand.item_from_list(items) for _ in range(100)]
+    assert all(v in items for v in values)
+
+
 @given(integers(), integers())
 def test_between(n, m):
     assume(n <= m)
@@ -47,8 +53,10 @@ def test_maximum_with_zero():
 
 
 @pytest.mark.parametrize("length", [-100, 20, 50, 0])
-def test_password(length):
+def test_passwords(length):
     assert len(rand.password(length)) == abs(length)
+    assert len(rand.strong_password(length)) == abs(length)
+    assert len(rand.hex_password(length)) == abs(length) * 2
 
 
 def test_is_password_strong():
@@ -59,3 +67,7 @@ def test_is_password_strong():
     assert not rand._is_password_strong("abCD%", extra_chars)
     assert not rand._is_password_strong("ABC2D1%", extra_chars)
     assert not rand._is_password_strong("abc2d1%", extra_chars)
+
+
+def test_uuid():
+    assert isinstance(rand.uuid(), str)
