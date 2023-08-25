@@ -90,7 +90,7 @@ def strong_password(length: int, extra_chars: str = "", max_tries: int = 100) ->
     fuse = 0
     while not _is_password_strong(generated_password, extra_chars):
         if fuse >= max_tries:
-            __logger.warning("Tried to generate proper password over {:d} times!".format(max_tries))
+            __logger.warning(f"Tried to generate proper password over {max_tries} times!")
             break
         fuse += 1
         generated_password = password(length, extra_chars)
