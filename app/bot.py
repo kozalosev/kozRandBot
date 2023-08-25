@@ -160,8 +160,8 @@ def get_hex_password(message: Message, lang: LanguageDictionary) -> str:
 
 def _get_password(args: str, lang: LanguageDictionary, generator: Callable[[int], str]) -> str:
     length = try_parse_int(args) if args else DEFAULT_PASSWORD_LENGTH
-    password_length_counter.labels(length).inc()
     if length and MIN_PASSWORD_LENGTH <= length <= MAX_PASSWORD_LENGTH:
+        password_length_counter.labels(length).inc()
         return generator(length)
     else:
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
