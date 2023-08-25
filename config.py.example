@@ -2,7 +2,7 @@ TOKEN = "123456789:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 2048
-DEFAULT_PASSWORD_LENGTH = 12
+DEFAULT_PASSWORD_LENGTH = 16
 # Here you may specify additional non-alphanumeric characters that will be used in generated passwords.
 PASSWORD_EXTRA_CHARS = ""
 # Threshold value to prevent the infinite loop to occur
