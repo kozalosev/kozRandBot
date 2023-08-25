@@ -1,8 +1,4 @@
-FROM python:3.8-alpine
-
-RUN apk update && \
-    apk add gcc musl-dev
-
+FROM python:3.11-alpine
 WORKDIR /home/kozRandBot
 
 COPY requirements.txt .

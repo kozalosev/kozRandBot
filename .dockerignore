@@ -1,1 +1,3 @@
 app/data
+venv*
+.hypothesis
