@@ -44,9 +44,15 @@ server {
     #access_log /dev/null;
     #error_log /home/username/logs/nginx/kozRandBot.err.log;
 
+    location = /kozRandBot/metrics {
+        proxy_pass http://127.0.0.1:8001;
+    }
+
     # Ensure the paths are consistent with the NAME and UNIX_SOCKET constants from 'app/data/config.py'.
     location /kozRandBot/ {
-        proxy_pass http://unix:/tmp/kozRandBot.sock;
+        proxy_pass http://127.0.0.1:8011;
+        # or for Unix domain socket:
+        #proxy_pass http://unix:/tmp/kozRandBot.sock;
     }
 }
 ```
