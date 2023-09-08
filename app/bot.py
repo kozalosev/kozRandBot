@@ -216,7 +216,12 @@ if __name__ == '__main__':
         async def setup_async(_: Dispatcher) -> None:
             await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}")
             await commands.set_commands(bot, localizations)
-
-        os.umask(0o137)  # rw-r----- for the Unix socket
-        executor.start_webhook(dispatcher, path=UNIX_SOCKET, webhook_path=f"/{NAME}/{TOKEN}",
-                               on_startup=setup_async, skip_updates=True)
+        start_executor = functools.partial(executor.start_webhook, dispatcher, webhook_path=f"/{NAME}/{TOKEN}",
+                                           on_startup=setup_async, skip_updates=True)
+        if SOCKET_TYPE == 'TCP':
+            start_executor(host=APP_HOST, port=APP_PORT)
+        elif SOCKET_TYPE == 'UNIX':
+            os.umask(0o137)  # rw-r----- for the Unix socket
+            start_executor(path=UNIX_SOCKET)
+        else:
+            raise ValueError("The value of the SOCKET_TYPE environment variable is invalid!")

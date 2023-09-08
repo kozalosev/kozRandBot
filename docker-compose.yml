@@ -1,14 +1,16 @@
-version: "3"
+version: "3.7"
 services:
-  textUtilsBot:
+  kozRandBot:
     build: .
     image: kozalo/kozrandbot
     container_name: kozrandbot
-    hostname: kozRandBot
     working_dir: /home/kozRandBot
-    restart: always
+    restart: unless-stopped
     volumes:
     - "./app/data:/home/kozRandBot/app/data"
     - "/tmp:/tmp"
     ports:
       - "127.0.0.1:8001:8000"
+      - "127.0.0.1:8011:8080"
+    logging:
+      driver: local
