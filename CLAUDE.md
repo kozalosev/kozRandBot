@@ -32,7 +32,7 @@ python app/bot.py   # uses polling mode
 ### Docker
 ```bash
 ./start.sh          # sets up config and runs docker-compose
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Architecture
