@@ -229,7 +229,7 @@ if __name__ == '__main__':
         asyncio.run(dispatcher.start_polling(bot))
     else:
         async def set_webhook() -> None:
-            await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}")
+            await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}", drop_pending_updates=True)
 
         dispatcher.startup.register(set_webhook)
         dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
