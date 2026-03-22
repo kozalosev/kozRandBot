@@ -1,13 +1,17 @@
 import os
+import html
 import logging
+import asyncio
 import functools
 from typing import *
 
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.dispatcher.filters import ChatTypeFilter
+from aiogram import Bot, Dispatcher
+from aiogram.enums import ChatType
+from aiogram.filters import Command
 from aiogram.types import Message, InlineQuery, ChosenInlineResult
-from aiogram.utils.markdown import quote_html
-from aiogram.utils.exceptions import TelegramAPIError
+from aiogram.exceptions import TelegramAPIError
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiohttp import web
 from klocmod import LocalizationsContainer, LanguageDictionary
 from prometheus_client import start_http_server, Counter
 
@@ -23,10 +27,9 @@ from handler import InlineHandlersLoader
 # INITIALIZATION
 
 bot = Bot(TOKEN)
-dispatcher = Dispatcher(bot)
+dispatcher = Dispatcher()
 localizations = LocalizationsContainer(localization.L)
 inline_handlers = InlineHandlersLoader()
-group_or_super_group_filter = ChatTypeFilter({types.ChatType.GROUP, types.ChatType.SUPERGROUP})
 logger = logging.getLogger(__name__)
 
 command_calls_counter = Counter("command_used", "Calls count of a command", ['handler'])
@@ -53,7 +56,7 @@ def reply_if_group(**kwargs) -> callable:
         async def wrapper(message: Message) -> None:
             lang = localizations.get_lang(message.from_user.language_code)
             text = func(message, lang)
-            if await group_or_super_group_filter.check(message):
+            if message.chat.type in (ChatType.GROUP, ChatType.SUPERGROUP):
                 await message.reply(text, **kwargs)
             else:
                 await bot.send_message(message.chat.id, text, **kwargs)
@@ -63,21 +66,21 @@ def reply_if_group(**kwargs) -> callable:
 
 # MESSAGE HANDLERS
 
-@dispatcher.message_handler(commands=['start', 'help'])
+@dispatcher.message(Command('start', 'help'))
 @reply_if_group(parse_mode="Markdown")
 def get_help(_: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("help").inc()
     return lang['help'].format(*[DEFAULT_PASSWORD_LENGTH]*2)
 
 
-@dispatcher.message_handler(commands=['coin', 'flip_coin'])
+@dispatcher.message(Command('coin', 'flip_coin'))
 @reply_if_group()
 def flip_coin(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("flip_coin").inc()
     return rand.one_out_of_two(lang['heads'], lang['tails'], from_premium(message))
 
 
-@dispatcher.message_handler(commands=['yesno', 'yes_or_no'])
+@dispatcher.message(Command('yesno', 'yes_or_no'))
 @reply_if_group()
 def yes_or_no(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("yes_or_no").inc()
@@ -86,14 +89,14 @@ def yes_or_no(message: Message, lang: LanguageDictionary) -> str:
     return rand.one_out_of_two(yes, no, from_premium(message))
 
 
-@dispatcher.message_handler(commands=['num', 'number'])
+@dispatcher.message(Command('num', 'number'))
 @reply_if_group(parse_mode="Markdown")
 def get_random_number(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("number").inc()
 
     wrong_text_message = "{}: `/number [{}] <{}>`".format(lang['usage'], lang['from'], lang['to'])
 
-    text = message.get_args()
+    text = _get_args(message)
     numbers = try_extract_numbers(text)
     if not numbers:
         if not message.reply_to_message:
@@ -110,7 +113,7 @@ def get_random_number(message: Message, lang: LanguageDictionary) -> str:
     return str(rand_num)
 
 
-@dispatcher.message_handler(commands=['list'])
+@dispatcher.message(Command('list'))
 @reply_if_group(parse_mode="HTML")
 def get_random_item(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("list").inc()
@@ -118,7 +121,7 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
     wrong_text_message = "{} <code>/list {} 1, {} 2, {} 3...</code>".format(
         lang['usage'], lang['item'], lang['item'], lang['item'])
 
-    text = message.get_args()
+    text = _get_args(message)
     if not text:
         if not message.reply_to_message:
             return wrong_text_message
@@ -127,35 +130,35 @@ def get_random_item(message: Message, lang: LanguageDictionary) -> str:
     items = Items(text)
     if items.acceptable:
         item = rand.item_from_list(items.list, from_premium(message))
-        return quote_html(item)
+        return html.escape(item)
     else:
         return wrong_text_message
 
 
-@dispatcher.message_handler(commands=['seq', 'password', 'sequence'])
+@dispatcher.message(Command('seq', 'password', 'sequence'))
 @reply_if_group()
 def get_password(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seq").inc()
     generator = functools.partial(rand.strong_password,
                                   extra_chars=PASSWORD_EXTRA_CHARS,
                                   max_tries=MAX_PASSWORD_GENERATION_TRIES)
-    return _get_password(message.get_args(), lang, generator)
+    return _get_password(_get_args(message), lang, generator)
 
 
-@dispatcher.message_handler(commands=['seqc', 'cseq', 'passwd'])
+@dispatcher.message(Command('seqc', 'cseq', 'passwd'))
 @reply_if_group()
 def get_password_conservative(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("seqc").inc()
     generator = functools.partial(rand.strong_password,
                                   max_tries=MAX_PASSWORD_GENERATION_TRIES)
-    return _get_password(message.get_args(), lang, generator)
+    return _get_password(_get_args(message), lang, generator)
 
 
-@dispatcher.message_handler(commands=['hex'])
+@dispatcher.message(Command('hex'))
 @reply_if_group()
 def get_hex_password(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("hex").inc()
-    return _get_password(message.get_args(), lang, rand.hex_password)
+    return _get_password(_get_args(message), lang, rand.hex_password)
 
 
 def _get_password(args: str, lang: LanguageDictionary, generator: Callable[[int], str]) -> str:
@@ -167,16 +170,22 @@ def _get_password(args: str, lang: LanguageDictionary, generator: Callable[[int]
         return lang['password_length_invalid'].format(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
 
 
-@dispatcher.message_handler(commands=['uuid'])
+@dispatcher.message(Command('uuid'))
 @reply_if_group()
 def get_uuid(message: Message, lang: LanguageDictionary) -> str:
     command_calls_counter.labels("uuid").inc()
     return rand.uuid()
 
 
+def _get_args(message: Message) -> str:
+    """Extract arguments after the command from message text."""
+    parts = (message.text or '').split(maxsplit=1)
+    return parts[1] if len(parts) > 1 else ''
+
+
 # INLINE HANDLER
 
-@dispatcher.inline_handler(lambda query: True)
+@dispatcher.inline_query()
 async def show_inline_suggestions(query: InlineQuery) -> None:
     inline_counter.inc()
 
@@ -199,7 +208,7 @@ async def show_inline_suggestions(query: InlineQuery) -> None:
         logger.exception(err_msg)
 
 
-@dispatcher.chosen_inline_handler()
+@dispatcher.chosen_inline_result()
 async def inc_counter_of_chosen_result(chosen_inline_query: ChosenInlineResult) -> None:
     chosen_inline_res_counter.labels(chosen_inline_query.result_id).inc()
 
@@ -210,18 +219,26 @@ if __name__ == '__main__':
     start_http_server(METRICS_PORT)
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
-        executor.start_polling(dispatcher, reset_webhook=False,    # webhook is reset on skip_updates
-                               on_startup=commands.gen_startup_hook(bot, localizations), skip_updates=True)
+        async def delete_webhook() -> None:
+            await bot.delete_webhook(drop_pending_updates=True)
+        dispatcher.startup.register(delete_webhook)
+        dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
+        asyncio.run(dispatcher.start_polling(bot))
     else:
-        async def setup_async(_: Dispatcher) -> None:
+        async def set_webhook() -> None:
             await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}")
-            await commands.set_commands(bot, localizations)
-        start_executor = functools.partial(executor.start_webhook, dispatcher, webhook_path=f"/{NAME}/{TOKEN}",
-                                           on_startup=setup_async, skip_updates=True)
+
+        dispatcher.startup.register(set_webhook)
+        dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
+
+        app = web.Application()
+        SimpleRequestHandler(dispatcher=dispatcher, bot=bot).register(app, path=f"/{NAME}/{TOKEN}")
+        setup_application(app, dispatcher, bot=bot)
+
         if SOCKET_TYPE == 'TCP':
-            start_executor(host=APP_HOST, port=APP_PORT)
+            web.run_app(app, host=APP_HOST, port=int(APP_PORT))
         elif SOCKET_TYPE == 'UNIX':
-            os.umask(0o137)  # rw-r----- for the Unix socket
-            start_executor(path=UNIX_SOCKET)
+            os.umask(0o137)
+            web.run_app(app, path=UNIX_SOCKET)
         else:
             raise ValueError("The value of the SOCKET_TYPE environment variable is invalid!")
