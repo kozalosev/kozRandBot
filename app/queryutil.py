@@ -25,10 +25,9 @@ class InlineQueryResultsBuilder:
 
     def new_article(self, res_id: str, title: str, text: str,
                     parse_mode: str = None,
-                    disable_web_page_preview: bool = None,
                     **kwargs) -> "InlineQueryResultsBuilder":
         """Creates a new article with specified parameters and appends it to the list."""
-        input_message_content = InputTextMessageContent(text, parse_mode, disable_web_page_preview)
+        input_message_content = InputTextMessageContent(message_text=text, parse_mode=parse_mode)
         obj = InlineQueryResultArticle(id=res_id, title=title, input_message_content=input_message_content,
                                        **kwargs)
         self._items.append(obj)
