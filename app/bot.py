@@ -6,6 +6,7 @@ import functools
 from typing import *
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ChatType
 from aiogram.filters import Command
 from aiogram.types import Message, InlineQuery, ChosenInlineResult
@@ -26,7 +27,8 @@ from handler import InlineHandlersLoader
 
 # INITIALIZATION
 
-bot = Bot(TOKEN)
+session = AiohttpSession(proxy=PROXY) if PROXY else None
+bot = Bot(TOKEN, session=session)
 dispatcher = Dispatcher()
 localizations = LocalizationsContainer(localization.L)
 inline_handlers = InlineHandlersLoader()
@@ -60,6 +62,7 @@ def reply_if_group(**kwargs) -> callable:
                 await message.reply(text, **kwargs)
             else:
                 await bot.send_message(message.chat.id, text, **kwargs)
+        del wrapper.__wrapped__  # prevent inspect.iscoroutinefunction from unwrapping to the sync func
         return wrapper
     return generator
 

@@ -9,7 +9,7 @@ async def set_commands(bot: Bot, localizations: LocalizationsContainer) -> None:
     lang_commands = {name: dct['commands'] for name, dct in localizations if 'commands' in dct}
     default_scope = BotCommandScopeDefault()
     for lang, commands in lang_commands.items():
-        cmds = [BotCommand(name, description) for name, description in commands.items()]
+        cmds = [BotCommand(command=name, description=description) for name, description in commands.items()]
         await bot.set_my_commands(cmds, default_scope, lang)
 
 
