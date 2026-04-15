@@ -27,8 +27,7 @@ from handler import InlineHandlersLoader
 
 # INITIALIZATION
 
-session = AiohttpSession(proxy=PROXY) if PROXY else None
-bot = Bot(TOKEN, session=session)
+bot: Bot  # initialized in run()
 dispatcher = Dispatcher()
 localizations = LocalizationsContainer(localization.L)
 inline_handlers = InlineHandlersLoader()
@@ -218,30 +217,55 @@ async def inc_counter_of_chosen_result(chosen_inline_query: ChosenInlineResult) 
 
 # ENTRY POINT
 
-if __name__ == '__main__':
-    start_http_server(METRICS_PORT)
-    if DEBUG:
-        logging.basicConfig(level=logging.DEBUG)
-        async def delete_webhook() -> None:
-            await bot.delete_webhook(drop_pending_updates=True)
-        dispatcher.startup.register(delete_webhook)
-        dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
-        asyncio.run(dispatcher.start_polling(bot))
-    else:
-        async def set_webhook() -> None:
-            await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}", drop_pending_updates=True)
+async def _start_polling() -> None:
+    async def delete_webhook() -> None:
+        await bot.delete_webhook(drop_pending_updates=True)
+    dispatcher.startup.register(delete_webhook)
+    dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
+    await dispatcher.start_polling(bot)
 
-        dispatcher.startup.register(set_webhook)
-        dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
 
-        app = web.Application()
-        SimpleRequestHandler(dispatcher=dispatcher, bot=bot).register(app, path=f"/{NAME}/{TOKEN}")
-        setup_application(app, dispatcher, bot=bot)
+async def _start_webhook() -> None:
+    async def set_webhook() -> None:
+        await bot.set_webhook(f"https://{HOST}:{SERVER_PORT}/{NAME}/{TOKEN}", drop_pending_updates=True)
+    dispatcher.startup.register(set_webhook)
+    dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
 
+    app = web.Application()
+    SimpleRequestHandler(dispatcher=dispatcher, bot=bot).register(app, path=f"/{NAME}/{TOKEN}")
+    setup_application(app, dispatcher, bot=bot)
+
+    runner = web.AppRunner(app)
+    try:
+        await runner.setup()
         if SOCKET_TYPE == 'TCP':
-            web.run_app(app, host=APP_HOST, port=int(APP_PORT))
+            site = web.TCPSite(runner, host=APP_HOST, port=int(APP_PORT))
         elif SOCKET_TYPE == 'UNIX':
             os.umask(0o137)
-            web.run_app(app, path=UNIX_SOCKET)
+            site = web.UnixSite(runner, path=UNIX_SOCKET)
         else:
             raise ValueError("The value of the SOCKET_TYPE environment variable is invalid!")
+        await site.start()
+        await asyncio.Event().wait()
+    finally:
+        await runner.cleanup()
+
+
+async def run() -> None:
+    global bot
+    session = AiohttpSession(proxy=PROXY) if PROXY else None
+    bot = Bot(TOKEN, session=session)
+    try:
+        await (_start_polling() if DEBUG else _start_webhook())
+    finally:
+        if bot.session:
+            await bot.session.close()
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO)
+    start_http_server(METRICS_PORT)
+    try:
+        asyncio.run(run())
+    except KeyboardInterrupt:
+        pass
