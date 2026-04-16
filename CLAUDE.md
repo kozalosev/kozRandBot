@@ -18,9 +18,9 @@ cp config.py.example app/data/config.py
 
 ### Running Tests
 ```bash
-PYTHONPATH=app pytest
-PYTHONPATH=app pytest tests/test_rand.py   # single file
-PYTHONPATH=app pytest -v                   # verbose
+pytest
+pytest tests/test_rand.py   # single file
+pytest -v                   # verbose
 ```
 
 ### Local Development

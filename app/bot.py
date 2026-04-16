@@ -16,13 +16,13 @@ from aiohttp import web
 from klocmod import LocalizationsContainer, LanguageDictionary
 from prometheus_client import start_http_server, Counter
 
-import commands
-import rand
-import localization
-from data.config import *
-from util import Items, try_parse_int, try_extract_numbers, from_premium
-from queryutil import InlineQueryResultsBuilder
-from handler import InlineHandlersLoader
+from . import commands
+from . import rand
+from . import localization
+from .data.config import *
+from .util import Items, try_parse_int, try_extract_numbers, from_premium
+from .queryutil import InlineQueryResultsBuilder
+from .handler import InlineHandlersLoader
 
 
 # INITIALIZATION

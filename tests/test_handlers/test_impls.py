@@ -2,7 +2,7 @@ import pytest
 from hypothesis import given
 from hypothesis.strategies import integers
 
-from handler import impls
+from app.handler import impls
 
 
 def test_matching_flip_coin():

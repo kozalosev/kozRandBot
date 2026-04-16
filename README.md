@@ -87,21 +87,11 @@ vim app/data/config.py
 Testing
 -------
 
-Note that testing facilities are not included in the Docker image. Therefore, to run the tests, you need *Python 3.7*
+Note that testing facilities are not included in the Docker image. Therefore, to run the tests, you need Python 3.14+
 and to install all dependencies from the `requirements.txt` and `requirements-dev.txt` files.
 
-After that, run the following command on Linux:
+After that, run the following command from the project root:
 
 ```bash
-PYTHONPATH=app pytest
+pytest
 ```
-
-Or one of these commands on Windows:
-* CMD:
-    ```cmd
-    set PYTHONPATH=app && pytest
-    ```
-* PowerShell:
-    ```powershell
-    $env:PYTHONPATH='app'; pytest
-    ```

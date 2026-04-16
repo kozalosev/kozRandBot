@@ -2,7 +2,7 @@ import pytest
 from hypothesis import given
 from hypothesis.strategies import integers, text, characters
 
-import util
+from app import util
 
 
 @given(integers())

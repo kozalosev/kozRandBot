@@ -1,9 +1,9 @@
 import pytest
 from klocmod import LanguageDictionary
 
-from handler.abc import InlineHandler, Universal
-from handler.loader import InlineHandlersLoader
-from handler import impls
+from app.handler.abc import InlineHandler, Universal
+from app.handler.loader import InlineHandlersLoader
+from app.handler import impls
 
 
 def test_load_impls():
