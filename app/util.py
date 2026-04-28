@@ -1,7 +1,7 @@
 import re
 from typing import Optional, List, Union
 from aiogram.types import Message, InlineQuery
-from .data import config
+from . import config
 
 
 class Items:

@@ -8,7 +8,7 @@ from .. import rand
 from .abc import HTML, Markdown, InlineHandler
 from ..util import try_parse_int, Items
 from .util import escape_html
-from ..data import config
+from .. import config
 
 
 class FlipCoinHandler(InlineHandler):

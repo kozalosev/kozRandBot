@@ -19,7 +19,7 @@ from prometheus_client import start_http_server, Counter
 from . import commands
 from . import rand
 from . import localization
-from .data.config import *
+from .config import *
 from .util import Items, try_parse_int, try_extract_numbers, from_premium
 from .queryutil import InlineQueryResultsBuilder
 from .handler import InlineHandlersLoader
@@ -239,7 +239,7 @@ async def _start_webhook() -> None:
     try:
         await runner.setup()
         if SOCKET_TYPE == 'TCP':
-            site = web.TCPSite(runner, host=APP_HOST, port=int(APP_PORT))
+            site = web.TCPSite(runner, host=APP_HOST, port=APP_PORT)
         elif SOCKET_TYPE == 'UNIX':
             os.umask(0o137)
             site = web.UnixSite(runner, path=UNIX_SOCKET)

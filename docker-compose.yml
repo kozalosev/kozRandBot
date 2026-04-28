@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   kozRandBot:
     build: .
@@ -6,8 +5,10 @@ services:
     container_name: kozrandbot
     working_dir: /home/kozRandBot
     restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
     volumes:
-    - "./app/data:/home/kozRandBot/app/data"
     - "/tmp:/tmp"
     expose:
       - "8080"
