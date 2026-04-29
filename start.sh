@@ -1,25 +1,30 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
-if [[ ! -f "app/data/config.py" ]]; then
-    echo "A configuration file was not found. Copying the skeleton..."
-
-    cp config.py.example app/data/config.py
-    sudo chgrp www-data app/data/config.py
-    chmod o-r app/data/config.py
-
-    echo "Edit the 'app/data/config.py' file and run this script again."
-    exit
+if [ ! -f .env ]; then
+    echo "Configuration file '.env' not found. Copying the template..."
+    cp .env.example .env
+    chmod 600 .env
+    echo "Edit '.env' (set TOKEN at minimum) and run this script again."
+    exit 1
 fi
 
-cmp --silent "config.py.example" "app/data/config.py"
-if [[ $? -eq 0 ]]; then
-    echo "Don't forget to change the values in the 'app/data/config.py' file!"
-    exit
+if cmp --silent .env.example .env; then
+    echo "Don't forget to change the values in '.env' (TOKEN is required)!"
+    exit 1
 fi
 
-if [[ $(stat -c "%U" app/data) != "www-data" ]]; then
-    echo "The 'app/data' directory must be owned by the 'www-data' user! Trying to fix it..."
-    sudo chown www-data app/data
+if [ ! -d venv ]; then
+    echo "Creating virtualenv and installing dependencies..."
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install -r requirements.txt
+else
+    . venv/bin/activate
 fi
 
-docker compose up -d --build
+set -a
+. ./.env
+set +a
+
+exec python -m app.bot

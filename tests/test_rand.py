@@ -2,7 +2,7 @@ import pytest
 from hypothesis import given, assume
 from hypothesis.strategies import integers
 
-import rand
+from app import rand
 
 
 @pytest.mark.parametrize("a,b", [

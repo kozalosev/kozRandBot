@@ -23,10 +23,9 @@ installed there.
 
 It's possible to start the bot without them, but this is not recommended for two reasons:
 
-1. Your system must have *Python 3.7* to be installed (Ubuntu 18.04, for example, is still supplied with Python 3.6.6).
+1. Your system must have *Python 3.10+* installed.
 2. You may use another front-end web server (not *nginx*) or process requests by the application's built-in server
-itself, but it will require you to write configuration files by yourself or even manually edit some lines in the code.
-See [this note](https://github.com/kozalosev/textUtilsBot#common-notes) for more information.
+itself, but it will require you to write configuration files by yourself.
 
 
 How to run the bot
@@ -48,7 +47,7 @@ server {
         proxy_pass http://127.0.0.1:8001;
     }
 
-    # Ensure the paths are consistent with the NAME and UNIX_SOCKET constants from 'app/data/config.py'.
+    # Ensure the paths are consistent with the NAME and UNIX_SOCKET environment variables from '.env'.
     location /kozRandBot/ {
         proxy_pass http://127.0.0.1:8011;
         # or for Unix domain socket:
@@ -68,40 +67,37 @@ ssl_certificate_key /your/path/to/private.key;
 ```
 
 **Then** execute the following commands:
-  
+
 ```bash
 # clone the repository
-git clone https://github.com/kozalosev/kozRandBot
+git clone https://github.com/kozalosev/kozRandBot && cd kozRandBot
 
-# at first run, the script copies an exemplary configuration file
-./start.sh
-
-# modify the config
-vim app/data/config.py
+# create the configuration file from the template and edit it
+cp .env.example .env && vim .env
 
 # run the application inside a Docker container
-./start.sh
+docker compose up -d --build
+```
+
+For local development without Docker, just use the `start.sh` shortcut — on the first run it bootstraps a virtualenv,
+installs dependencies, copies `.env.example` to `.env` and exits with a prompt to edit it; subsequent runs start the
+bot:
+
+```bash
+./start.sh           # bootstraps venv + .env, then exits
+vim .env             # set TOKEN, DEBUG=true
+./start.sh           # runs the bot
 ```
 
 
 Testing
 -------
 
-Note that testing facilities are not included in the Docker image. Therefore, to run the tests, you need *Python 3.7*
+Note that testing facilities are not included in the Docker image. Therefore, to run the tests, you need Python 3.14+
 and to install all dependencies from the `requirements.txt` and `requirements-dev.txt` files.
 
-After that, run the following command on Linux:
+After that, run the following command from the project root:
 
 ```bash
-PYTHONPATH=app pytest
+pytest
 ```
-
-Or one of these commands on Windows:
-* CMD:
-    ```cmd
-    set PYTHONPATH=app && pytest
-    ```
-* PowerShell:
-    ```powershell
-    $env:PYTHONPATH='app'; pytest
-    ```

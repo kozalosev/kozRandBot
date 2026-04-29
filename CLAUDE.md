@@ -12,21 +12,20 @@ kozRandBot is an async Telegram bot (Python + aiogram 2.x) that provides randomi
 ```bash
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
-# Copy example config (required for tests)
-cp config.py.example app/data/config.py
+cp .env.example .env
 ```
 
 ### Running Tests
 ```bash
-PYTHONPATH=app pytest
-PYTHONPATH=app pytest tests/test_rand.py   # single file
-PYTHONPATH=app pytest -v                   # verbose
+pytest
+pytest tests/test_rand.py   # single file
+pytest -v                   # verbose
 ```
 
 ### Local Development
 ```bash
-# Edit app/data/config.py: set DEBUG=True, add TOKEN
-python app/bot.py   # uses polling mode
+# Edit .env: set DEBUG=true, add TOKEN
+python -m app.bot   # uses polling mode
 ```
 
 ### Docker
@@ -54,11 +53,11 @@ To add a new inline handler: create a subclass of `InlineHandler` in `impls.py`;
 - `app/localization.py` — multi-language strings via `klocmod`
 - `app/commands.py` — registers bot commands with Telegram API
 
-### Configuration (`app/data/config.py`)
-Not tracked in git. Key settings:
+### Configuration (`.env`)
+Not tracked in git (copy from `.env.example`). Key variables:
 - `TOKEN` — Telegram bot token
-- `DEBUG` — `True` = polling (local dev), `False` = webhooks (production)
-- `PREMIUM_USERS_UID` — list of Telegram user IDs that get `SystemRandom`
+- `DEBUG` — `true` = polling (local dev), `false` = webhooks (production)
+- `PREMIUM_USERS_UID` — comma-separated list of Telegram user IDs that get `SystemRandom`
 - Password settings: `MIN/MAX/DEFAULT_PASSWORD_LENGTH`, `PASSWORD_EXTRA_CHARS`
 - Network: `APP_HOST`, `APP_PORT`, `HOST`, `SERVER_PORT`, `SOCKET_TYPE` (TCP or UNIX)
 
@@ -66,7 +65,6 @@ Not tracked in git. Key settings:
 - `tests/test_rand.py` — property-based tests with `hypothesis`
 - `tests/test_list.py` — `Items` parser edge cases
 - `tests/test_handlers/` — handler impl and loader tests
-- `PYTHONPATH=app` is required because tests import from the `app/` package root
 
 ### Deployment
 Production uses Docker + nginx reverse proxy. Webhook URL pattern: `https://<HOST>/bot/<TOKEN>`. Metrics at `:8001`, app at `:8011` (docker-compose port mapping).

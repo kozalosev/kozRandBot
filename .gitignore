@@ -1,5 +1,6 @@
 .*/
+.claude/
 __pycache__/
 venv/
 
-app/data/config.py
+.env

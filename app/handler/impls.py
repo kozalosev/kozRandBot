@@ -4,11 +4,11 @@ import re
 from klocmod import LanguageDictionary
 from typing import *
 
-import rand
-from handler.abc import HTML, Markdown, InlineHandler
-from util import try_parse_int, Items
+from .. import rand
+from .abc import HTML, Markdown, InlineHandler
+from ..util import try_parse_int, Items
 from .util import escape_html
-from data import config
+from .. import config
 
 
 class FlipCoinHandler(InlineHandler):
