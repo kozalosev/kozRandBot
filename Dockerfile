@@ -3,8 +3,8 @@ WORKDIR /home/kozRandBot
 
 RUN apk add --no-cache su-exec
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt requirements-proxy.txt ./
+RUN pip install -r requirements.txt -r requirements-proxy.txt
 
 COPY app ./app
 COPY docker/entrypoint.sh /entrypoint.sh
