@@ -36,20 +36,16 @@ How to run the bot
 ```
 server {
     # Telegram supports ports 443, 80, 88 and 8443.
-    listen 8443 ssl;
+    listen 443 ssl;
     server_name bots.example.org;
 
     # You may want to override the global logging settings.
     #access_log /dev/null;
     #error_log /home/username/logs/nginx/kozRandBot.err.log;
 
-    location = /kozRandBot/metrics {
-        proxy_pass http://127.0.0.1:8001;
-    }
-
     # Ensure the paths are consistent with the NAME and UNIX_SOCKET environment variables from '.env'.
     location /kozRandBot/ {
-        proxy_pass http://127.0.0.1:8011;
+        proxy_pass http://127.0.0.1:8080;
         # or for Unix domain socket:
         #proxy_pass http://unix:/tmp/kozRandBot.sock;
     }

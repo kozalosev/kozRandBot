@@ -14,7 +14,7 @@ from aiogram.exceptions import TelegramAPIError
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 from klocmod import LocalizationsContainer, LanguageDictionary
-from prometheus_client import start_http_server, Counter
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Counter
 
 from . import commands
 from . import rand
@@ -217,12 +217,39 @@ async def inc_counter_of_chosen_result(chosen_inline_query: ChosenInlineResult) 
 
 # ENTRY POINT
 
+async def _metrics_handler(_: web.Request) -> web.Response:
+    return web.Response(body=generate_latest(), headers={"Content-Type": CONTENT_TYPE_LATEST})
+
+
+def _make_site(runner: web.AppRunner) -> web.BaseSite:
+    if SOCKET_TYPE == 'TCP':
+        return web.TCPSite(runner, host=APP_HOST, port=APP_PORT)
+    elif SOCKET_TYPE == 'UNIX':
+        os.umask(0o137)
+        return web.UnixSite(runner, path=UNIX_SOCKET)
+    else:
+        raise ValueError("The value of the SOCKET_TYPE environment variable is invalid!")
+
+
+async def _serve(main: Awaitable, setup: Callable[[web.Application], None] = lambda _: None) -> None:
+    app = web.Application()
+    app.router.add_get("/metrics", _metrics_handler)
+    setup(app)
+    runner = web.AppRunner(app)
+    try:
+        await runner.setup()
+        await _make_site(runner).start()
+        await main
+    finally:
+        await runner.cleanup()
+
+
 async def _start_polling() -> None:
     async def delete_webhook() -> None:
         await bot.delete_webhook(drop_pending_updates=True)
     dispatcher.startup.register(delete_webhook)
     dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
-    await dispatcher.start_polling(bot)
+    await _serve(dispatcher.start_polling(bot))
 
 
 async def _start_webhook() -> None:
@@ -231,24 +258,11 @@ async def _start_webhook() -> None:
     dispatcher.startup.register(set_webhook)
     dispatcher.startup.register(commands.gen_startup_hook(bot, localizations))
 
-    app = web.Application()
-    SimpleRequestHandler(dispatcher=dispatcher, bot=bot).register(app, path=f"/{NAME}/{TOKEN}")
-    setup_application(app, dispatcher, bot=bot)
+    def setup(app: web.Application) -> None:
+        SimpleRequestHandler(dispatcher=dispatcher, bot=bot).register(app, path=f"/{NAME}/{TOKEN}")
+        setup_application(app, dispatcher, bot=bot)
 
-    runner = web.AppRunner(app)
-    try:
-        await runner.setup()
-        if SOCKET_TYPE == 'TCP':
-            site = web.TCPSite(runner, host=APP_HOST, port=APP_PORT)
-        elif SOCKET_TYPE == 'UNIX':
-            os.umask(0o137)
-            site = web.UnixSite(runner, path=UNIX_SOCKET)
-        else:
-            raise ValueError("The value of the SOCKET_TYPE environment variable is invalid!")
-        await site.start()
-        await asyncio.Event().wait()
-    finally:
-        await runner.cleanup()
+    await _serve(asyncio.Event().wait(), setup)
 
 
 async def run() -> None:
@@ -264,7 +278,6 @@ async def run() -> None:
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO)
-    start_http_server(METRICS_PORT)
     try:
         asyncio.run(run())
     except KeyboardInterrupt:
